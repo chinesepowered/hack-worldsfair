@@ -1,5 +1,8 @@
 # Winning Shortlist — solo, stacking allowed, .edu in hand, based in SF
 
+> **Superseded:** the final recommendation now lives in [`final.md`](./final.md), which corrects the
+> #1 below (multi-chain x402 alone isn't novel — the confidentiality layer is). The ranking logic here still holds.
+
 > Supersedes the ranking in [`ideas.md`](./ideas.md) under three new constraints:
 > **(1)** multi-track stacking is assumed allowed, **(2)** University Award is in play via a `.edu`,
 > **(3)** solo builder. These three together change the optimal play more than any single idea does.
