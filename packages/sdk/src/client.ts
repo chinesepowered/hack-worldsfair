@@ -42,6 +42,7 @@ type Pending = {
   decimals?: number;
   amount?: bigint;
   decision?: Decision;
+  receipt?: SignedReceipt;
 };
 
 export class SottoClient {
@@ -151,22 +152,27 @@ export class SottoClient {
       transactions, confidential: p.scheme !== "tempo" && p.scheme !== "exact",
       details: p.decision?.usd6 !== undefined && p.decision.usd6 !== null ? { usd: formatUsd6(p.decision.usd6) } : undefined,
     };
-    await this.receipts.put(await this.receiptSigner.sign(r));
+    const signed = await this.receiptSigner.sign(r);
+    await this.receipts.put(signed);
+    p.receipt = signed;
   }
 
-  /** A fetch that pays when asked — within policy — and records a receipt. Throws PolicyViolation when denied. */
-  readonly fetch: typeof fetch = async (input, init) => {
+  /** Like `fetch`, but also returns the receipt and policy decision when a payment happened. */
+  async fetchDetailed(input: RequestInfo | URL, init?: RequestInit): Promise<{ response: Response; receipt?: SignedReceipt; decision?: Decision }> {
     const resource = typeof input === "string" ? input : input instanceof URL ? input.toString() : input.url;
     const p: Pending = { resource };
     return this.als.run(p, async () => {
-      const res = await this.payingFetch(input, init);
-      if (p.protocol === "mpp" && res.headers.get("payment-receipt")) {
-        const receipt = MppReceipt.fromResponse(res);
+      const response = await this.payingFetch(input, init);
+      if (p.protocol === "mpp" && response.headers.get("payment-receipt")) {
+        const receipt = MppReceipt.fromResponse(response);
         await this.record(p, [receipt.reference]);
       }
-      return res;
+      return { response, receipt: p.receipt, decision: p.decision };
     });
-  };
+  }
+
+  /** A fetch that pays when asked — within policy — and records a receipt. Throws PolicyViolation when denied. */
+  readonly fetch: typeof fetch = async (input, init) => (await this.fetchDetailed(input, init)).response;
 
   async listReceipts(): Promise<SignedReceipt[]> { return this.receipts.list({ agentId: this.config.agentId }); }
   async decisions() { return this.policy.log.list(this.config.agentId); }

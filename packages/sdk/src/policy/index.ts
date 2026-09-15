@@ -108,6 +108,21 @@ export class PolicyEngine {
     if (p) p.paused = paused;
   }
 
+  /** Remaining budget per configured window, and the policy itself — for dashboards and agents asking "what can I still spend?". */
+  async remaining(agentId: string, now = this.now()): Promise<{ policy: Policy | undefined; remaining: { hour?: Usd6; day?: Usd6; month?: Usd6 }; spent: { hour: Usd6; day: Usd6; month: Usd6 } }> {
+    const policy = this.policies.get(agentId);
+    const spent = {
+      hour: await this.log.spentSince(agentId, new Date(now.getTime() - 3_600_000)),
+      day: await this.log.spentSince(agentId, new Date(now.getTime() - 86_400_000)),
+      month: await this.log.spentSince(agentId, new Date(now.getTime() - 30 * 86_400_000)),
+    };
+    const remaining: { hour?: Usd6; day?: Usd6; month?: Usd6 } = {};
+    if (policy?.perHour !== undefined) remaining.hour = policy.perHour - spent.hour;
+    if (policy?.perDay !== undefined) remaining.day = policy.perDay - spent.day;
+    if (policy?.perMonth !== undefined) remaining.month = policy.perMonth - spent.month;
+    return { policy, remaining, spent };
+  }
+
   /** Decide and log. Throws PolicyViolation when denied. */
   async authorize(intent: PaymentIntent): Promise<Decision> {
     const d = await this.evaluate(intent);

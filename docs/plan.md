@@ -12,11 +12,11 @@ Deadline: **Oct 12, 2026, 11:59pm PT**. Last five days are reserved for videos +
 - [x] Decide: **Tempo via MPP is must-ship** (proven). Base x402 `exact` is the cheap fourth
 
 ## Phase 1 — must-ship
-- [~] `packages/sdk`: policy engine + receipts done (unit-tested); x402 + MPP adapters done for Solana; client/server facades next
+- [x] `packages/sdk`: policy engine, signed receipts (memory + JSON-lines file), x402 + MPP adapters for Solana confidential and Zcash shielded, Tempo via mppx, `SottoServer` (dual-protocol 402 middleware) and `SottoClient` (policy-gated paying fetch + receipts). All integration tests green (local validator, fake Zcash settler, live Tempo)
 - [x] Backend: Solana confidential — rail (`src/rails/solana-confidential`), x402 scheme `confidential` (`src/x402`), MPP method `solana-confidential` (`src/mpp`); HTTP integration tests green on the local validator
 - [~] Backend: Zcash shielded — `services/zcash-settler serve` works (/health /address /balance /sync /send /received); TS rail + x402/MPP adapters in progress; end-to-end blocked on testnet funds (faucets down/queued)
-- [ ] Backend: Tempo (MPP + TIP-20 memo) — or Base x402 `exact` if Tempo slips
-- [ ] `packages/mcp-server`: `pay`, `fetch_paid`, `budget_status` tools
+- [x] Backend: Tempo via mppx `tempo` method, policy-gated in `SottoClient`; live facade test on Moderato
+- [x] `packages/mcp-server`: `sotto_fetch`, `sotto_budget`, `sotto_receipts`, `sotto_decisions`, `sotto_set_paused` over stdio; driven end to end by the MCP client SDK in a test
 - [ ] `packages/demo`: paywalled API + agent + observer/owner/auditor views (the demo path)
 - [ ] README per chain, written for that ecosystem's developers; live tx links on each chain
 - [ ] License, CI, tests for the policy engine and each backend's happy path
