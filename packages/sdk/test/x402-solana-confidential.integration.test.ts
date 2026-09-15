@@ -27,7 +27,7 @@ describe.skipIf(!haveLocalValidator)("x402 confidential scheme over HTTP (local 
       "GET /premium": {
         accepts: { scheme: "confidential", network: NETWORK, price: "$0.25", payTo: fx.bob.address },
         description: "premium data",
-        extensions: { "payment-identifier": declarePaymentIdentifierExtension({ required: true }) },
+        extensions: { "payment-identifier": declarePaymentIdentifierExtension(true) },
       },
     }, resourceServer));
     app.get("/premium", (_req, res) => { res.json({ data: "the premium data" }); });

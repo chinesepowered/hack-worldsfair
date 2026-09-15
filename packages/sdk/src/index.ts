@@ -6,3 +6,5 @@ export * from "./rails/solana-confidential/index.js";
 export * from "./x402/index.js";
 export * from "./mpp/index.js";
 export * from "./rails/zcash-shielded/index.js";
+export * from "./server.js";
+export * from "./client.js";

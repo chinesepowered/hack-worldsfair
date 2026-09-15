@@ -41,7 +41,7 @@ describe("shielded over x402", () => {
     const facilitator = new x402Facilitator().register(ZCASH_TESTNET, new ShieldedZcashFacilitatorScheme({ settler: chain.payee, address: PAYEE }));
     const rs = new x402ResourceServer(new LocalFacilitatorClient(facilitator)).register(ZCASH_TESTNET, new ShieldedZcashServerScheme({ zecPriceUsd: 40 })).registerExtension(paymentIdentifierResourceServerExtension);
     const app = express();
-    app.use(paymentMiddleware({ "GET /p": { accepts: { scheme: "shielded", network: ZCASH_TESTNET, price: "$0.40", payTo: PAYEE }, extensions: { "payment-identifier": declarePaymentIdentifierExtension({ required: true }) } } }, rs));
+    app.use(paymentMiddleware({ "GET /p": { accepts: { scheme: "shielded", network: ZCASH_TESTNET, price: "$0.40", payTo: PAYEE }, extensions: { "payment-identifier": declarePaymentIdentifierExtension(true) } } }, rs));
     app.get("/p", (_q, s) => { s.json({ ok: 1 }); });
     const server = app.listen(0, "127.0.0.1"); await new Promise<void>(r => server.once("listening", r));
     const url = `http://127.0.0.1:${(server.address() as AddressInfo).port}/p`;

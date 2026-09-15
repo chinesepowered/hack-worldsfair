@@ -162,10 +162,11 @@ export class PolicyEngine {
   }
 }
 
+/** Hostname (no port) for URLs; `mcp:<tool path>` for MCP resources; the raw string otherwise. */
 export function hostOf(resource: string): string {
   try {
     const u = new URL(resource);
-    return u.protocol === "mcp:" ? `mcp:${u.host}${u.pathname}` : u.host;
+    return u.protocol === "mcp:" ? `mcp:${u.host}${u.pathname}` : u.hostname;
   } catch {
     return resource;
   }
