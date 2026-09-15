@@ -214,7 +214,8 @@ unserved half. Together they're a product; either alone is a feature.
 | **Public Good** | Open-source rail and MCP server. | $5,000 |
 | **University** | If CCSF part-time qualifies — confirm this week. | $5,000 |
 
-Realistic target: **~$40k** (three thin tracks + Base + Public Good). Ceiling is meaningfully higher.
+**$40k is the ceiling if every stacked track hits — not the expectation.** Honest calibration, if executed
+well: roughly a coin flip to win *at least one* prize, expected cash **~$6–8k**, grand prize under 1%. See §3.
 
 **The demo, in three minutes:**
 1. *0:00–0:30 — the problem, made visceral.* Pull up a public agent's wallet and, live, reconstruct its
@@ -263,3 +264,44 @@ auditor dashboard beyond a CLI.
 If Zcash fails the three-day spike *and* Token-2022 confidential transfers fight you, pivot to **C15 +
 C16**: bounded agent wallets with pre-flight risk scoring, one EVM codebase on six tracks plus Solana.
 Lower ceiling, very high floor, and it reuses everything you'd already built.
+
+---
+
+## 3. Calibration — is this as good as it gets?
+
+**No.** It's the best *risk-adjusted* bet constructible from public information, not a lock. Estimates,
+conditional on good execution (3+ chains working, strong demo, clean repo):
+
+| Outcome | Estimate |
+|---|---|
+| Zcash track ($10k) | 15–35% |
+| Tempo track ($10k) | 10–25% |
+| Solana track ($10k) | 2–5% |
+| Public Good ($5k) | 10–20% |
+| University ($5k) | unknown until eligibility is confirmed |
+| **At least one prize** | **~50–60%** |
+| $15k standout / grand prize | ~2% / <1% |
+| **Expected cash** | **~$6–8k** (unconditional, after solo execution risk: ~$4–5k) |
+| Accelerator | low single digits, solo |
+
+**Least certain points:**
+1. **Demand is anticipatory.** Nobody is losing money today because their agent's payments are public. A
+   judge can fairly ask "who asked for this?" and Traction will be zero.
+2. **Stacking dilutes depth — and stacking is an unverified assumption.** Each track's judges compare you
+   to projects that are all-in on their chain. If stacking is disallowed, collapse to one hero chain
+   (Zcash); a Zcash-only product may carry a higher single-track probability (~30–45%) than the stack.
+3. **The sponsors' own judges for Zcash, Tempo, and Hyperliquid are not on the published panel.** I don't
+   know who scores those tracks or what they prefer.
+4. **Grand prizes go to things people used during the window.** Infra for agents will have ~zero real
+   users by Oct 12.
+
+**Highest-leverage improvements, more than any idea swap:**
+- **Validate demand in week 1, in person.** Ten conversations with people shipping agents in SF; quotes in
+  the pitch video. Directly repairs *Insight* and *Founder + Market Fit*, the two criteria where solo
+  submissions bleed.
+- **Ship the MCP server by week 2 and get real usage** from the x402 and MCP communities. Fifty real
+  transactions from strangers is traction almost no solo dev tool brings.
+
+**Alternatives by risk profile:** higher ceiling → a mechanism primitive (C1-style; ~5% at something big,
+~80% at nothing). Higher floor → C20 or C15+C16 (likelier to win *something*, near-zero accelerator
+ceiling). The recommendation sits between them on purpose.
