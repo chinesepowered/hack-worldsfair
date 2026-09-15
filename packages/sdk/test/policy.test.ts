@@ -64,3 +64,15 @@ describe("PolicyEngine", () => {
     await expect(priced.evaluate(intent(1_000_000n, zec))).resolves.toMatchObject({ allowed: true, usd6: 400_000n }); // 0.01 ZEC = $0.40
   });
 });
+
+describe("voided decisions", () => {
+  it("stop counting against budgets once the payment is known not to have settled", async () => {
+    const e = new PolicyEngine();
+    e.setPolicy({ agentId: "agent-1", perDay: 100_000n });
+    const d = await e.authorize(intent(60_000n));
+    await expect(e.evaluate(intent(60_000n))).resolves.toMatchObject({ allowed: false });
+    await e.voidDecision(d.id, "fetch failed");
+    await expect(e.evaluate(intent(60_000n))).resolves.toMatchObject({ allowed: true });
+    expect((await e.log.list("agent-1"))[0]).toMatchObject({ allowed: false, reason: "voided: fetch failed" });
+  });
+});

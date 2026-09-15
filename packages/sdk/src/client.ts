@@ -162,12 +162,19 @@ export class SottoClient {
     const resource = typeof input === "string" ? input : input instanceof URL ? input.toString() : input.url;
     const p: Pending = { resource };
     return this.als.run(p, async () => {
-      const response = await this.payingFetch(input, init);
-      if (p.protocol === "mpp" && response.headers.get("payment-receipt")) {
-        const receipt = MppReceipt.fromResponse(response);
-        await this.record(p, [receipt.reference]);
+      try {
+        const response = await this.payingFetch(input, init);
+        if (p.protocol === "mpp" && response.headers.get("payment-receipt")) {
+          const receipt = MppReceipt.fromResponse(response);
+          await this.record(p, [receipt.reference]);
+        }
+        // authorized, but no receipt came back: the payment did not settle, so it must not count against budgets
+        if (p.decision?.allowed && !p.receipt) await this.policy.voidDecision(p.decision.id, `no settlement (status ${response.status})`);
+        return { response, receipt: p.receipt, decision: p.decision };
+      } catch (e) {
+        if (p.decision?.allowed && !p.receipt) await this.policy.voidDecision(p.decision.id, (e as Error).message);
+        throw e;
       }
-      return { response, receipt: p.receipt, decision: p.decision };
     });
   }
 

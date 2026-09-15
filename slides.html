@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>sotto</title>
+<meta name="description" content="Four slides: confidential, budgeted, auditable payments for AI agents.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+  :root{
+    --paper:#f3f6f1; --paper-2:#e9eee6; --rule:#c6d3c1; --ink:#15201b; --ink-2:#4a5a52; --ink-3:#7d8b84;
+    --accent:#b23a26; --accent-ink:#ffffff; --good:#2f7d4f; --warn:#9a6b12; --redact:#15201b;
+    --display:"Bricolage Grotesque",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    --serif:"Source Serif 4",Georgia,"Times New Roman",serif;
+    --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    color-scheme:light dark;
+  }
+  @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+    --paper:#0f1613; --paper-2:#151e1a; --rule:#25332d; --ink:#e6ece7; --ink-2:#a9b6ae; --ink-3:#7a877f;
+    --accent:#e2664f; --accent-ink:#0f1613; --good:#5fbf85; --warn:#d9a441; --redact:#e6ece7;
+  }}
+  :root[data-theme="dark"]{
+    --paper:#0f1613; --paper-2:#151e1a; --rule:#25332d; --ink:#e6ece7; --ink-2:#a9b6ae; --ink-3:#7a877f;
+    --accent:#e2664f; --accent-ink:#0f1613; --good:#5fbf85; --warn:#d9a441; --redact:#e6ece7;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);font-size:clamp(15px,1.35vw,21px);line-height:1.45;padding:0 16px;padding-block:0}
+  .deck{position:relative;height:100%;max-width:1440px;margin:0 auto}
+  .slide{position:absolute;inset:0;display:grid;grid-template-rows:auto 1fr auto;gap:clamp(12px,2vh,28px);padding:clamp(20px,4vh,48px) clamp(8px,3vw,48px);opacity:0;visibility:hidden;transition:opacity .35s ease}
+  .slide.on{opacity:1;visibility:visible}
+  @media (prefers-reduced-motion: reduce){ .slide{transition:none} }
+  .eyebrow{font-family:var(--mono);font-size:.72em;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)}
+  .eyebrow b{color:var(--accent);font-weight:600}
+  h1{font-family:var(--display);font-weight:800;font-size:clamp(30px,4.6vw,76px);line-height:1.02;letter-spacing:-.02em;margin:.15em 0 0;text-wrap:balance;max-width:20ch}
+  h2{font-family:var(--display);font-weight:700;font-size:clamp(16px,1.6vw,24px);letter-spacing:-.01em;margin:0 0 .4em}
+  p{margin:0;max-width:62ch}
+  .lede{font-size:1.08em;color:var(--ink-2);max-width:56ch}
+  .body{display:grid;gap:clamp(12px,2vw,28px);align-content:start;min-height:0}
+  .ledger{border-top:2px solid var(--ink);border-bottom:1px solid var(--rule);font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:.82em;overflow-x:auto}
+  .ledger table{width:100%;border-collapse:collapse;min-width:640px}
+  .ledger th{font-weight:500;color:var(--ink-3);text-align:left;padding:.55em .6em;border-bottom:1px solid var(--rule);letter-spacing:.08em;text-transform:uppercase;font-size:.78em}
+  .ledger td{padding:.62em .6em;border-bottom:1px solid var(--rule);white-space:nowrap}
+  .ledger tr:last-child td{border-bottom:0}
+  .amt{text-align:right}.amt.leak{color:var(--accent);font-weight:600}
+  .bar{display:inline-block;background:var(--redact);color:transparent;border-radius:2px;user-select:none}
+  .ok{color:var(--good);font-weight:600}.warn{color:var(--warn)}.dim{color:var(--ink-3)}
+  .three{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(10px,1.6vw,24px)}
+  .pane{border-top:2px solid var(--ink);padding-top:.7em}
+  .pane .who{font-family:var(--display);font-weight:700;font-size:1.05em;margin:0 0 .2em}
+  .pane .sees{font-family:var(--mono);font-size:1.5em;line-height:1.2;margin:.25em 0 .35em;font-variant-numeric:tabular-nums}
+  .pane p{font-size:.9em;color:var(--ink-2)}
+  .strip{display:flex;flex-wrap:wrap;gap:.5em .9em;font-family:var(--mono);font-size:.8em;color:var(--ink-2);align-items:center}
+  .chip{border:1px solid var(--rule);border-radius:3px;padding:.25em .55em;background:var(--paper-2)}
+  .chip.accent{border-color:var(--accent);color:var(--accent)}
+  .facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:clamp(10px,1.6vw,24px)}
+  .fact{border-top:2px solid var(--ink);padding-top:.5em}
+  .fact .n{font-family:var(--display);font-weight:800;font-size:clamp(28px,3.4vw,54px);letter-spacing:-.02em;line-height:1;font-variant-numeric:tabular-nums}
+  .fact .l{font-size:.9em;color:var(--ink-2);margin-top:.35em}
+  .rails{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(10px,1.6vw,24px)}
+  .rail{border-top:2px solid var(--ink);padding-top:.6em}
+  .rail h3{font-family:var(--display);font-weight:700;font-size:1.05em;margin:0 0 .3em}
+  .rail p{font-size:.88em;color:var(--ink-2)}
+  .rail .how{font-family:var(--mono);font-size:.74em;color:var(--ink-3);margin-top:.5em}
+  .foot{display:flex;justify-content:space-between;align-items:end;gap:1em;font-family:var(--mono);font-size:.74em;color:var(--ink-3);border-top:1px solid var(--rule);padding-top:.7em;padding-right:150px}
+  .foot .brand{font-family:var(--display);font-weight:800;color:var(--ink);font-size:1.15em;letter-spacing:-.02em}
+  .stamp{display:inline-block;transform:rotate(-3deg);transform-origin:left center;border:2px solid var(--accent);color:var(--accent);font-family:var(--mono);font-weight:600;letter-spacing:.16em;text-transform:uppercase;padding:.3em .7em;font-size:clamp(11px,.85vw,14px);border-radius:3px;margin:.6em 0 0 .2em}
+  nav{position:fixed;right:max(16px,env(safe-area-inset-right,0px));bottom:max(16px,env(safe-area-inset-bottom,0px));display:flex;gap:.4em;align-items:center;font-family:var(--mono);font-size:12px;color:var(--ink-3)}
+  nav button{background:var(--paper-2);border:1px solid var(--rule);color:var(--ink);border-radius:3px;width:34px;height:30px;cursor:pointer;font-family:var(--mono)}
+  nav button:hover,nav button:focus-visible{border-color:var(--accent);outline:none}
+  nav .dots{display:flex;gap:6px;margin:0 .5em}
+  nav .dots i{width:7px;height:7px;border-radius:50%;background:var(--rule);display:block}
+  nav .dots i.on{background:var(--accent)}
+  .ask{font-family:var(--display);font-weight:700;font-size:clamp(18px,2vw,30px);letter-spacing:-.01em;max-width:28ch;text-wrap:balance}
+  .cols{display:grid;grid-template-columns:1.1fr .9fr;gap:clamp(16px,3vw,48px);align-items:start}
+  ul{margin:0;padding-left:1.1em}li{margin:.28em 0}
+  @media (max-width:860px){
+    .slide{position:relative;opacity:1;visibility:visible;height:auto;min-height:100%;border-bottom:1px solid var(--rule)}
+    .three,.rails,.cols{grid-template-columns:1fr}
+    nav{display:none}
+    h1{max-width:none}
+  }
+</style>
+</head>
+<body>
+<div class="deck" id="deck">
+
+  <section class="slide on" data-n="1">
+    <header>
+      <div class="eyebrow">1 / 4 · <b>the problem</b></div>
+      <h1>Every agent payment is a public confession.</h1>
+    </header>
+    <div class="body">
+      <p class="lede">A trading agent buys market data every few minutes. Point any explorer at its wallet and its strategy writes itself — which feeds, how often, at what price. And nothing bounds it: one bug or one bad prompt spends the whole wallet.</p>
+      <div class="ledger" aria-label="A public agent wallet, as anyone can read it">
+        <table>
+          <thead><tr><th>time</th><th>resource</th><th>from → to</th><th class="amt">amount (public)</th></tr></thead>
+          <tbody>
+            <tr><td>14:40:07</td><td>api.marketdata.io/quote</td><td>7xKq…3fA1 → 9mRe…bT2c</td><td class="amt leak">0.250000 USDC</td></tr>
+            <tr><td>14:40:22</td><td>api.marketdata.io/quote</td><td>7xKq…3fA1 → 9mRe…bT2c</td><td class="amt leak">0.250000 USDC</td></tr>
+            <tr><td>14:41:03</td><td>signals.quantfeed.ai/alpha</td><td>7xKq…3fA1 → 4Hp2…kL9e</td><td class="amt leak">12.000000 USDC</td></tr>
+            <tr><td>14:41:41</td><td>api.marketdata.io/quote</td><td>7xKq…3fA1 → 9mRe…bT2c</td><td class="amt leak">0.250000 USDC</td></tr>
+            <tr><td>14:42:19</td><td>signals.quantfeed.ai/alpha</td><td>7xKq…3fA1 → 4Hp2…kL9e</td><td class="amt leak">12.000000 USDC</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="strip"><span class="chip">x402 · exact</span><span class="chip">plain SPL / ERC-20 transfer</span><span class="dim">→ the competitor's dashboard, written by the chain.</span></div>
+    </div>
+    <footer class="foot"><span class="brand">sotto</span><span>Crypto World's Fair · Sep 2026</span></footer>
+  </section>
+
+  <section class="slide" data-n="2">
+    <header>
+      <div class="eyebrow">2 / 4 · <b>the product</b></div>
+      <h1>sotto: paid quietly, proven loudly.</h1>
+      <div><span class="stamp">confidential · not anonymous</span></div>
+    </header>
+    <div class="body">
+      <p class="lede">The same payment, three viewpoints. Amounts are encrypted on-chain; the owner sees everything; an auditor with a viewing key recovers the exact figure from the ledger — trusting nothing from the agent.</p>
+      <div class="three">
+        <div class="pane"><div class="who">Public</div><div class="sees"><span class="bar">0.250000</span></div><p>Transactions exist. Balance reads 0. The amount is ciphertext. On Zcash, sender and receiver are hidden too.</p></div>
+        <div class="pane"><div class="who">Owner</div><div class="sees">$0.25</div><p>Every payment, as a signed receipt in a private ledger — with the policy decision that allowed it.</p></div>
+        <div class="pane"><div class="who">Auditor</div><div class="sees">$0.25 <span class="ok">✓</span></div><p>Decrypts the amount from the on-chain proof with the mint's auditor key. 0.8 s. No logs, no trust.</p></div>
+      </div>
+      <div class="strip">
+        <span class="dim">policy, enforced before anything is signed:</span>
+        <span class="chip">cap $0.50 / payment</span><span class="chip">$10 / day</span><span class="chip">allow *.marketdata.io</span><span class="chip accent">pause</span>
+      </div>
+    </div>
+    <footer class="foot"><span class="brand">sotto</span><span>x402 schemes <code>confidential</code> + <code>shielded</code> · MPP methods · MCP server</span></footer>
+  </section>
+
+  <section class="slide" data-n="3">
+    <header>
+      <div class="eyebrow">3 / 4 · <b>built, not pitched</b></div>
+      <h1>Three rails. Two protocols. One <code style="font-family:var(--mono);font-weight:600">fetch</code>.</h1>
+    </header>
+    <div class="body">
+      <div class="rails">
+        <div class="rail"><h3>Solana · confidential</h3><p>Token-2022 confidential transfer, range proof staged in an SPL Record account, payment id in a memo.</p><div class="how">payee/auditor: find the validity proof the transfer references → decrypt lo + (hi ≪ 16)</div></div>
+        <div class="rail"><h3>Zcash · shielded</h3><p>A shielded note whose encrypted memo is the payment id. Amount, sender and receiver all hidden.</p><div class="how">payee: viewing-key settler scans for memo == id, value ≥ price</div></div>
+        <div class="rail"><h3>Tempo · MPP</h3><p>Stripe's payments chain, spoken natively through the Machine Payments Protocol. Public, bounded, receipted.</p><div class="how">policy runs on the challenge before the TIP-20 transfer is signed</div></div>
+      </div>
+      <div class="facts">
+        <div class="fact"><div class="n">1.6 s</div><div class="l">per confidential payment, 402 → 200</div></div>
+        <div class="fact"><div class="n">0.8 s</div><div class="l">for an auditor to decrypt from the ledger</div></div>
+        <div class="fact"><div class="n">5</div><div class="l">MCP tools — any agent, one line of config</div></div>
+        <div class="fact"><div class="n">20</div><div class="l">integration tests green, on real chains</div></div>
+      </div>
+      <div class="strip"><span class="dim">one 402, two headers:</span><span class="chip">PAYMENT-REQUIRED</span><span class="chip">WWW-Authenticate: Payment</span><span class="dim">— x402 agents and MPP agents both proceed.</span></div>
+    </div>
+    <footer class="foot"><span class="brand">sotto</span><span>Apache-2.0 · github.com/chinesepowered/hack-worldsfair</span></footer>
+  </section>
+
+  <section class="slide" data-n="4">
+    <header>
+      <div class="eyebrow">4 / 4 · <b>why now, why me</b></div>
+      <h1>The rails just arrived. Nobody has laid them.</h1>
+    </header>
+    <div class="body cols">
+      <ul>
+        <li>Solana's confidential transfers returned to mainnet in <b>June 2026</b>. Usage is near zero — the tooling is a month old.</li>
+        <li>Agent payments are the newest stablecoin flow, and every one is public: Coinbase counts <b>100M+ x402 payments</b>; Tempo's mainnet has been live since <b>March 2026</b>.</li>
+        <li>Privacy is the enterprise blocker — no company puts its purchasing on a public ledger. sotto is the layer the payment standards won't build themselves.</li>
+        <li>Solo founder, San Francisco, four weeks: SDK, MCP server, Rust Zcash settler, demo — all open source.</li>
+      </ul>
+      <div>
+        <div class="ask">Ask: the accelerator, and a first design partner running agents that buy data.</div>
+        <div class="strip" style="margin-top:1em"><span class="chip">Solana track</span><span class="chip">Zcash track</span><span class="chip">Tempo track</span><span class="chip">x402 / Base compatible</span></div>
+      </div>
+    </div>
+    <footer class="foot"><span class="brand">sotto</span><span>confidential · bounded · auditable</span></footer>
+  </section>
+
+</div>
+<nav aria-label="Slides">
+  <button id="prev" aria-label="Previous slide">←</button>
+  <div class="dots" id="dots"><i class="on"></i><i></i><i></i><i></i></div>
+  <button id="next" aria-label="Next slide">→</button>
+</nav>
+<script>
+  const slides=[...document.querySelectorAll('.slide')], dots=[...document.querySelectorAll('#dots i')];
+  let i=Math.max(0,Math.min(slides.length-1,(parseInt(location.hash.slice(1),10)||1)-1));
+  function show(n){ i=(n+slides.length)%slides.length; slides.forEach((s,k)=>s.classList.toggle('on',k===i)); dots.forEach((d,k)=>d.classList.toggle('on',k===i)); history.replaceState(null,'','#'+(i+1)); }
+  document.getElementById('next').onclick=()=>show(i+1); document.getElementById('prev').onclick=()=>show(i-1);
+  addEventListener('keydown',e=>{ if(['ArrowRight','PageDown',' '].includes(e.key)){e.preventDefault();show(i+1)} if(['ArrowLeft','PageUp'].includes(e.key)){e.preventDefault();show(i-1)} });
+  document.getElementById('deck').addEventListener('click',e=>{ if(e.target.closest('a,button')) return; show(e.clientX>innerWidth/2?i+1:i-1); });
+  show(i);
+</script>
+</body>
+</html>

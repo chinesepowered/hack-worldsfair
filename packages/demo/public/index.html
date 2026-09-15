@@ -1,55 +1,149 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><title>sotto — who can see what</title>
+<html lang="en">
+<head>
+<meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<title>sotto · who can see what</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
 <style>
-  :root{--bg:#0e1116;--panel:#161b22;--line:#2a313b;--fg:#e6edf3;--dim:#8b949e;--ok:#3fb950;--warn:#d29922;--bad:#f85149;--accent:#79c0ff}
-  body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.45 ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto;padding:24px}
-  h1{font-size:20px;margin:0 0 4px}h2{font-size:15px;margin:0 0 8px;color:var(--accent)}
-  .sub{color:var(--dim);margin-bottom:20px}
-  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:16px}
-  .panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px;min-height:220px}
-  table{width:100%;border-collapse:collapse;font-size:12.5px}th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--line);vertical-align:top}th{color:var(--dim);font-weight:600}
-  .mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px}
-  .pill{display:inline-block;padding:2px 8px;border-radius:999px;font-size:11.5px;border:1px solid var(--line)}
-  .hidden{color:var(--dim)}.ok{color:var(--ok)}.bad{color:var(--bad)}.warn{color:var(--warn)}
-  button{background:#21262d;color:var(--fg);border:1px solid var(--line);border-radius:6px;padding:6px 10px;cursor:pointer}button:hover{border-color:var(--accent)}
-  .note{color:var(--dim);font-size:12.5px;margin-top:8px}
-</style></head><body>
-<h1>sotto · who can see what</h1>
-<div class="sub">One agent, one paid API, three viewpoints. Refreshes every 3s.</div>
-<div class="grid">
-  <div class="panel"><h2>1 · Observer (anyone, on-chain)</h2>
-    <div class="note">The API's token account. Public balance and every transaction are visible — the amounts are not.</div>
-    <div class="mono" id="obs-acct"></div>
-    <table><thead><tr><th>tx</th><th>slot</th><th>amount</th></tr></thead><tbody id="obs"></tbody></table>
-  </div>
-  <div class="panel"><h2>2 · Owner (the agent's operator)</h2>
-    <div class="note">Signed receipts from the agent's private ledger — every payment, in full.</div>
-    <table><thead><tr><th>when</th><th>resource</th><th>paid</th><th>rail</th></tr></thead><tbody id="own"></tbody></table>
-  </div>
-  <div class="panel"><h2>3 · Auditor (with the mint's auditor key)</h2>
-    <div class="note">Pick a receipt: the auditor recovers the exact amount from the ledger alone — proof transactions are discovered on-chain, nothing is trusted from the agent.</div>
-    <div id="aud"></div>
-  </div>
+  :root{
+    --paper:#f3f6f1; --paper-2:#e9eee6; --rule:#c6d3c1; --ink:#15201b; --ink-2:#4a5a52; --ink-3:#7d8b84;
+    --accent:#b23a26; --accent-ink:#fff; --good:#2f7d4f; --warn:#9a6b12; --bad:#b23a26; --redact:#15201b;
+    --display:"Bricolage Grotesque",ui-sans-serif,system-ui,sans-serif; --serif:"Source Serif 4",Georgia,serif; --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+    color-scheme:light dark;
+  }
+  @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ --paper:#0f1613; --paper-2:#151e1a; --rule:#25332d; --ink:#e6ece7; --ink-2:#a9b6ae; --ink-3:#7a877f; --accent:#e2664f; --accent-ink:#0f1613; --good:#5fbf85; --warn:#d9a441; --bad:#e2664f; --redact:#e6ece7; }}
+  :root[data-theme="dark"]{ --paper:#0f1613; --paper-2:#151e1a; --rule:#25332d; --ink:#e6ece7; --ink-2:#a9b6ae; --ink-3:#7a877f; --accent:#e2664f; --accent-ink:#0f1613; --good:#5fbf85; --warn:#d9a441; --bad:#e2664f; --redact:#e6ece7; }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);font-size:15px;line-height:1.45;padding:0 20px;padding-block:22px 40px}
+  .wrap{max-width:1360px;margin:0 auto;display:grid;gap:22px}
+  header{display:flex;flex-wrap:wrap;align-items:end;justify-content:space-between;gap:12px 24px;border-bottom:2px solid var(--ink);padding-bottom:12px}
+  .brand{font-family:var(--display);font-weight:800;font-size:30px;letter-spacing:-.02em;line-height:1}
+  .tag{color:var(--ink-2);margin-top:4px}
+  .chips{display:flex;flex-wrap:wrap;gap:6px;font-family:var(--mono);font-size:12px}
+  .chip{border:1px solid var(--rule);background:var(--paper-2);border-radius:3px;padding:3px 8px;color:var(--ink-2)}
+  .chip.on{border-color:var(--good);color:var(--good)}
+  .summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:16px}
+  .stat{border-top:2px solid var(--ink);padding-top:8px}
+  .stat .n{font-family:var(--display);font-weight:800;font-size:34px;letter-spacing:-.02em;line-height:1;font-variant-numeric:tabular-nums}
+  .stat .l{color:var(--ink-2);font-size:13px;margin-top:6px}
+  .n.good{color:var(--good)}.n.bad{color:var(--bad)}
+  .panes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
+  .pane{border-top:2px solid var(--ink);padding-top:10px;min-width:0}
+  .pane h2{font-family:var(--display);font-weight:700;font-size:17px;margin:0;letter-spacing:-.01em}
+  .pane .who{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)}
+  .pane p.note{color:var(--ink-2);font-size:13px;margin:6px 0 10px}
+  table{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:12px;font-variant-numeric:tabular-nums}
+  th{text-align:left;color:var(--ink-3);font-weight:500;padding:6px 6px;border-bottom:1px solid var(--rule);text-transform:uppercase;letter-spacing:.08em;font-size:10.5px}
+  td{padding:7px 6px;border-bottom:1px solid var(--rule);vertical-align:top;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:0}
+  td.amt,th.amt{text-align:right}
+  .bar{display:inline-block;background:var(--redact);color:transparent;border-radius:2px;user-select:none}
+  .ok{color:var(--good);font-weight:600}.bad{color:var(--bad)}.dim{color:var(--ink-3)}.warn{color:var(--warn)}
+  a{color:var(--ink);text-decoration:underline;text-decoration-color:var(--rule);text-underline-offset:2px}a:hover{text-decoration-color:var(--accent)}
+  button{font-family:var(--mono);font-size:12px;background:var(--paper-2);color:var(--ink);border:1px solid var(--rule);border-radius:3px;padding:5px 10px;cursor:pointer}
+  button:hover,button:focus-visible{border-color:var(--accent);outline:none}
+  button.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+  button:disabled{opacity:.5;cursor:default}
+  .policy{display:grid;grid-template-columns:1.2fr 2fr;gap:20px;border-top:2px solid var(--ink);padding-top:10px}
+  .meter{height:10px;background:var(--paper-2);border:1px solid var(--rule);border-radius:2px;overflow:hidden;margin:8px 0 4px}
+  .meter i{display:block;height:100%;background:var(--good);width:0;transition:width .3s}
+  .meter i.full{background:var(--warn)}
+  .feed{font-family:var(--mono);font-size:12px;display:grid;gap:4px;max-height:220px;overflow:auto}
+  .feed div{display:grid;grid-template-columns:64px 62px 1fr;gap:10px;border-bottom:1px solid var(--rule);padding:4px 0}
+  .k{font-weight:600}.k.paid{color:var(--good)}.k.denied{color:var(--bad)}.k.free{color:var(--ink-3)}.k.error{color:var(--warn)}
+  .row-actions{display:flex;gap:8px;align-items:center;margin-top:8px;flex-wrap:wrap}
+  .empty{color:var(--ink-3);font-family:var(--mono);font-size:12px;padding:10px 6px}
+  @media (max-width:980px){ .panes{grid-template-columns:1fr}.policy{grid-template-columns:1fr} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><div class="brand">sotto</div><div class="tag">Who can see what — one agent, one paid API, three viewpoints. Live.</div></div>
+    <div class="chips" id="rails"><span class="chip">connecting…</span></div>
+  </header>
+
+  <section class="summary" id="summary">
+    <div class="stat"><div class="n" id="s-paid">—</div><div class="l">payments made</div></div>
+    <div class="stat"><div class="n" id="s-spent">—</div><div class="l">spent today (owner view)</div></div>
+    <div class="stat"><div class="n" id="s-public">0</div><div class="l">visible on-chain to the public, in dollars</div></div>
+    <div class="stat"><div class="n" id="s-denied">—</div><div class="l">payments the policy refused</div></div>
+  </section>
+
+  <section class="panes">
+    <div class="pane">
+      <div class="who">viewpoint 1</div><h2>Public — anyone with an explorer</h2>
+      <p class="note">The API's token account. Every transaction is visible. The amount column is ciphertext; the public balance reads 0.</p>
+      <div class="dim" style="font-family:var(--mono);font-size:11px;margin-bottom:6px" id="obs-acct"></div>
+      <table><thead><tr><th>tx</th><th>slot</th><th class="amt">amount</th></tr></thead><tbody id="obs"></tbody></table>
+    </div>
+    <div class="pane">
+      <div class="who">viewpoint 2</div><h2>Owner — the agent's operator</h2>
+      <p class="note">Signed receipts from the agent's private ledger: every payment in full, with the policy decision behind it.</p>
+      <table><thead><tr><th>when</th><th>resource</th><th class="amt">paid</th><th>rail</th></tr></thead><tbody id="own"></tbody></table>
+    </div>
+    <div class="pane">
+      <div class="who">viewpoint 3</div><h2>Auditor — holds the mint's auditor key</h2>
+      <p class="note">Recovers the exact amount from the ledger alone. The proof transactions are discovered on-chain; nothing is trusted from the agent.</p>
+      <table><thead><tr><th>tx</th><th class="amt">decrypted</th><th></th></tr></thead><tbody id="aud"></tbody></table>
+    </div>
+  </section>
+
+  <section class="policy">
+    <div>
+      <div class="who" style="font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)">the owner's policy</div>
+      <h2 style="font-family:var(--display);font-weight:700;font-size:17px;margin:0">quote-bot · <span id="p-state" class="ok">running</span></h2>
+      <div style="font-family:var(--mono);font-size:12px;color:var(--ink-2);margin-top:6px" id="p-caps">cap — / payment · — / day</div>
+      <div class="meter"><i id="p-meter"></i></div>
+      <div style="font-family:var(--mono);font-size:12px" id="p-spent">spent — of —</div>
+      <div class="row-actions">
+        <button class="primary" id="btn-pause" onclick="control('pause')">Pause spending</button>
+        <button id="btn-resume" onclick="control('resume')">Resume</button>
+        <span class="dim" style="font-family:var(--mono);font-size:11px">The kill switch: while paused, every payment is refused before it is signed.</span>
+      </div>
+    </div>
+    <div>
+      <div class="who" style="font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)">agent activity</div>
+      <div class="feed" id="feed"><div class="empty">waiting for the agent…</div></div>
+    </div>
+  </section>
 </div>
 <script>
-const $ = id => document.getElementById(id);
-const short = s => s ? s.slice(0,8)+'…'+s.slice(-4) : '';
+const $=id=>document.getElementById(id);
+const short=s=>s?s.slice(0,6)+'…'+s.slice(-4):'';
+let explorerTx=null, audited={};
+const txLink=sig=>explorerTx?`<a href="${explorerTx.replace('{sig}',sig)}" target="_blank" rel="noopener">${short(sig)}</a>`:short(sig);
+async function j(u,o){const r=await fetch(u,o);return r.ok?r.json():Promise.reject(await r.json().catch(()=>({error:r.status})))}
 async function tick(){
-  try {
-    const o = await (await fetch('/api/observer')).json();
-    $('obs-acct').textContent = `account ${o.tokenAccount}  ·  public balance ${o.publicBalance}`;
-    $('obs').innerHTML = o.transactions.map(t => `<tr><td class="mono">${short(t.signature)}</td><td>${t.slot}</td><td class="hidden">ciphertext — not visible</td></tr>`).join('') || '<tr><td colspan=3 class="hidden">no transactions yet</td></tr>';
-    const w = await (await fetch('/api/owner')).json();
-    $('own').innerHTML = w.receipts.map(r => `<tr><td>${new Date(r.at).toLocaleTimeString()}</td><td>${new URL(r.resource).pathname}</td><td class="ok">${r.details?.usd ?? r.amount}</td><td><span class="pill">${r.scheme}${r.confidential?' · confidential':''}</span></td></tr>`).join('') || '<tr><td colspan=4 class="hidden">no receipts yet</td></tr>';
-    $('aud').innerHTML = w.receipts.filter(r => r.scheme === 'solana-confidential' || r.scheme === 'confidential').slice(0,6).map(r => `<div style="margin:6px 0"><button onclick="audit('${r.transactions[0]}','${r.paymentId}',this)">decrypt ${short(r.transactions[0])}</button> <span class="mono" id="aud-${r.paymentId}"></span></div>`).join('') || '<span class="hidden">no confidential payments yet</span>';
-  } catch (e) { console.error(e); }
+  try{
+    const rails=await j('/api/rails'); explorerTx=rails.explorerTx;
+    $('rails').innerHTML=[['Solana · confidential',true],['Zcash · shielded',rails.zcash],['Tempo · MPP',rails.tempo]].map(([n,on])=>`<span class="chip ${on?'on':''}">${n}${on?'':' · off'}</span>`).join('');
+    const o=await j('/api/observer');
+    $('obs-acct').textContent=`account ${o.tokenAccount} · public balance ${o.publicBalance}`;
+    $('obs').innerHTML=o.transactions.length?o.transactions.map(t=>`<tr><td>${txLink(t.signature)}</td><td>${t.slot}</td><td class="amt"><span class="bar">0.000000</span></td></tr>`).join(''):'<tr><td colspan=3 class="empty">no transactions yet</td></tr>';
+    const w=await j('/api/owner');
+    $('own').innerHTML=w.receipts.length?w.receipts.map(r=>`<tr><td>${new Date(r.at).toLocaleTimeString()}</td><td>${new URL(r.resource).pathname}</td><td class="amt ok">${r.details?.usd??r.amount}</td><td>${r.scheme}</td></tr>`).join(''):'<tr><td colspan=4 class="empty">no receipts yet</td></tr>';
+    const conf=w.receipts.filter(r=>r.scheme==='solana-confidential'||r.scheme==='confidential').slice(0,8);
+    $('aud').innerHTML=conf.length?conf.map(r=>{const a=audited[r.paymentId];return `<tr><td>${txLink(r.transactions[0])}</td><td class="amt">${a?(a.ok?`<span class="ok">$${a.usd}</span>`:`<span class="bad">${a.error}</span>`):'<span class="bar">0.000000</span>'}</td><td>${a?'<span class="dim">from ledger ✓</span>':`<button onclick="audit('${r.transactions[0]}','${r.paymentId}',this)">decrypt</button>`}</td></tr>`}).join(''):'<tr><td colspan=3 class="empty">no confidential payments yet</td></tr>';
+    $('s-paid').textContent=w.receipts.length;
+    const spent=w.receipts.reduce((s,r)=>s+Number((r.details?.usd??'$0').replace('$','')),0); $('s-spent').textContent='$'+spent.toFixed(2);
+    try{
+      const a=await j('/api/agent/status');
+      $('p-state').textContent=a.paused?'paused':'running'; $('p-state').className=a.paused?'bad':'ok';
+      $('p-caps').textContent=`cap ${a.maxPerPaymentUsd} / payment · ${a.dayBudgetUsd??'∞'} / day`;
+      const used=a.dayBudgetUsd?Number(a.spentTodayUsd.replace('$',''))/Number(a.dayBudgetUsd.replace('$','')):0;
+      $('p-meter').style.width=Math.min(100,used*100)+'%'; $('p-meter').className=used>=1?'full':'';
+      $('p-spent').textContent=`spent ${a.spentTodayUsd} of ${a.dayBudgetUsd??'∞'} today · ${a.remainingTodayUsd??'∞'} left`;
+      $('btn-pause').disabled=a.paused; $('btn-resume').disabled=!a.paused;
+      $('s-denied').textContent=a.events.filter(e=>e.kind==='denied').length;
+      $('feed').innerHTML=a.events.length?a.events.map(e=>`<div><span class="dim">${e.at.slice(11,19)}</span><span class="k ${e.kind}">${e.kind}</span><span>${e.text}${e.tx?' · '+txLink(e.tx):''}</span></div>`).join(''):'<div class="empty">no activity yet</div>';
+    }catch{ $('p-state').textContent='not running'; $('p-state').className='dim'; $('feed').innerHTML='<div class="empty">start the agent with LOOP=1 pnpm agent</div>'; }
+  }catch(e){console.error(e)}
 }
-async function audit(tx, paymentId, btn){
-  btn.disabled = true; const out = $('aud-'+paymentId); out.textContent = 'decrypting…';
-  const r = await fetch(`/api/auditor?transfer=${tx}&paymentId=${encodeURIComponent(paymentId)}`); const j = await r.json();
-  out.innerHTML = r.ok ? `<span class="ok">$${j.usd}</span> (${j.amount} units) via proof ${short(j.validityProofSignature)}` : `<span class="bad">${j.error}</span>`;
-  btn.disabled = false;
-}
-tick(); setInterval(tick, 3000);
-</script></body></html>
+async function audit(tx,paymentId,btn){ btn.disabled=true; btn.textContent='decrypting…'; try{ const r=await j(`/api/auditor?transfer=${tx}&paymentId=${encodeURIComponent(paymentId)}`); audited[paymentId]={ok:true,usd:r.usd}; }catch(e){ audited[paymentId]={ok:false,error:e.error||'failed'}; } tick(); }
+async function control(a){ await fetch('/api/agent/'+a,{method:'POST'}); tick(); }
+tick(); setInterval(tick,3000);
+</script>
+</body>
+</html>

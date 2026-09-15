@@ -56,6 +56,8 @@ export type Decision = {
 
 export interface DecisionLog {
   append(d: Decision): Promise<void>;
+  /** Flip an allowed decision to denied after the fact (the payment never happened) so it stops counting against budgets. */
+  void(id: string, reason: string): Promise<void>;
   /** Sum of allowed spend for an agent since `since`. */
   spentSince(agentId: string, since: Date): Promise<Usd6>;
   list(agentId?: string): Promise<Decision[]>;
@@ -64,6 +66,10 @@ export interface DecisionLog {
 export class MemoryDecisionLog implements DecisionLog {
   readonly decisions: Decision[] = [];
   async append(d: Decision) { this.decisions.push(d); }
+  async void(id: string, reason: string) {
+    const d = this.decisions.find(x => x.id === id);
+    if (d && d.allowed) { d.allowed = false; d.reason = `voided: ${reason}`; d.remaining = undefined; }
+  }
   async spentSince(agentId: string, since: Date) {
     let total = 0n;
     for (const d of this.decisions) if (d.agentId === agentId && d.allowed && d.at >= since && d.usd6 !== null) total += d.usd6;
@@ -130,6 +136,9 @@ export class PolicyEngine {
     if (!d.allowed) throw new PolicyViolation(d);
     return d;
   }
+
+  /** A payment that was authorized but never settled must not consume budget. */
+  async voidDecision(id: string, reason: string): Promise<void> { await this.log.void(id, reason); }
 
   /** Decide without logging or throwing. */
   async evaluate(intent: PaymentIntent): Promise<Decision> {

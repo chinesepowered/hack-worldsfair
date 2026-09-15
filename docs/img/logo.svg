@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="360" height="120" viewBox="0 0 360 120" role="img" aria-label="sotto">
+  <title>sotto</title>
+  <rect width="360" height="120" rx="10" fill="#f3f6f1"/>
+  <text x="28" y="82" font-family="Bricolage Grotesque, Inter, Helvetica, Arial, sans-serif" font-weight="800" font-size="64" letter-spacing="-2" fill="#15201b">sotto</text>
+  <g transform="translate(232 44)">
+    <rect x="0" y="0" width="96" height="16" rx="2" fill="#15201b"/>
+    <rect x="0" y="24" width="60" height="16" rx="2" fill="#b23a26"/>
+    <text x="68" y="37" font-family="IBM Plex Mono, Menlo, monospace" font-weight="600" font-size="14" fill="#15201b">$0.25</text>
+  </g>
+</svg>

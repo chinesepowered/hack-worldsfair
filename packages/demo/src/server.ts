@@ -13,7 +13,7 @@ import { elgamalSecretFromBytes, FileReceiptStore, SottoServer, verifyConfidenti
 import express from "express";
 import { readFileSync } from "node:fs";
 
-const cfg = JSON.parse(readFileSync(new URL("../demo-solana.json", import.meta.url), "utf8")) as { rpcUrl: string; network: string; mint: Address; decimals: number; agent: Address; api: Address; auditorElgamalPubkey: Address; auditorElgamalSecret: number[] };
+const cfg = JSON.parse(readFileSync(new URL("../demo-solana.json", import.meta.url), "utf8")) as { rpcUrl: string; network: string; explorerTx?: string; mint: Address; decimals: number; agent: Address; api: Address; auditorElgamalPubkey: Address; auditorElgamalSecret: number[] };
 const api = await createKeyPairSignerFromBytes(new Uint8Array(JSON.parse(readFileSync(process.env.SOLANA_PAYEE_KEYFILE!, "utf8"))));
 if (api.address !== cfg.api) throw new Error(`SOLANA_PAYEE_KEYFILE is ${api.address}, demo-solana.json expects ${cfg.api}`);
 const rpc = createSolanaRpc(cfg.rpcUrl);
@@ -61,8 +61,19 @@ app.get("/api/auditor", async (req, res) => {
   } catch (e) { res.status(422).json({ error: (e as Error).message }); }
 });
 
-/** Sanity: which rails this API accepts. */
-app.get("/api/rails", (_q, res) => res.json({ solana: cfg.network, zcash: Boolean(process.env.ZCASH_SETTLER_URL), tempo: Boolean(process.env.TEMPO_RECIPIENT), mint: cfg.mint, api: cfg.api }));
+/** Sanity: which rails this API accepts, and where transactions can be viewed. */
+app.get("/api/rails", (_q, res) => res.json({ solana: cfg.network, zcash: Boolean(process.env.ZCASH_SETTLER_URL), tempo: Boolean(process.env.TEMPO_RECIPIENT), mint: cfg.mint, api: cfg.api, explorerTx: cfg.explorerTx ?? null }));
+
+/** The agent runs as its own process; the dashboard reaches its control endpoint through here. */
+const AGENT_URL = process.env.AGENT_URL ?? "http://127.0.0.1:4021";
+app.get("/api/agent/status", async (_q, res) => {
+  try { res.json(await (await fetch(`${AGENT_URL}/status`)).json()); } catch { res.status(503).json({ error: "agent is not running" }); }
+});
+for (const action of ["pause", "resume"] as const) {
+  app.post(`/api/agent/${action}`, async (_q, res) => {
+    try { res.json(await (await fetch(`${AGENT_URL}/${action}`, { method: "POST" })).json()); } catch { res.status(503).json({ error: "agent is not running" }); }
+  });
+}
 
 /** Memo lookup for the observer table: which payment ids appear in these transactions. */
 app.get("/api/tx/:sig", async (req, res) => {

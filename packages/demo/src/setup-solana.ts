@@ -42,6 +42,7 @@ await client.sendTransaction(sequentialInstructionPlan([
   singleInstructionPlan(getConfidentialDepositInstruction({ token: agentToken, mint, authority: agent, amount: FUND, decimals: DECIMALS })),
 ]));
 await client.sendTransaction(singleInstructionPlan(getApplyConfidentialPendingBalanceInstructionFromToken({ token: agentToken, tokenAccount: (await fetchToken(client.rpc, agentToken)).data, authority: agent, elgamalSecretKey: agentKeys.elgamalSecretKey, aesKey: agentKeys.aesKey })));
-const out = { rpcUrl: RPC_URL, network: process.env.SOLANA_NETWORK ?? "solana:localnet", mint, decimals: DECIMALS, agent: agent.address, api: api.address, auditorElgamalPubkey: auditorKeys.elgamalPubkey, auditorElgamalSecret: Array.from(auditorKeys.elgamalSecretKey.toBytes()) };
+const explorerTx = process.env.EXPLORER_TX ?? (RPC_URL.includes("127.0.0.1") || RPC_URL.includes("localhost") ? `https://explorer.solana.com/tx/{sig}?cluster=custom&customUrl=${encodeURIComponent(RPC_URL)}` : "https://explorer.solana.com/tx/{sig}?cluster=devnet");
+const out = { rpcUrl: RPC_URL, network: process.env.SOLANA_NETWORK ?? "solana:localnet", explorerTx, mint, decimals: DECIMALS, agent: agent.address, api: api.address, auditorElgamalPubkey: auditorKeys.elgamalPubkey, auditorElgamalSecret: Array.from(auditorKeys.elgamalSecretKey.toBytes()) };
 writeFileSync(new URL("../demo-solana.json", import.meta.url), JSON.stringify(out, null, 2));
 console.log("wrote demo-solana.json; agent funded with", FUND, "units");
