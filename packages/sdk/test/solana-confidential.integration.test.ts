@@ -47,6 +47,10 @@ describe.skipIf(!PAYER || !PAYEE)("solana confidential rail (local validator)", 
     expect(asPayee.mint).toBe(mint);
     const asAuditor = await verifyConfidentialPayment({ rpc: RPC_URL, ...proof, elgamalSecret: auditor.elgamalSecretKey, elgamalPubkey: auditor.elgamalPubkey, role: "auditor", minAmount: 0n });
     expect(asAuditor.amount).toBe(1_234_567n);
+    // an auditor who only knows the transfer signature discovers the proof transactions from the ledger
+    const discovered = await verifyConfidentialPayment({ rpc: RPC_URL, transferSignature: proof.transferSignature, paymentId, elgamalSecret: auditor.elgamalSecretKey, elgamalPubkey: auditor.elgamalPubkey, role: "auditor", minAmount: 0n });
+    expect(discovered.amount).toBe(1_234_567n);
+    expect(discovered.validityProofSignature).toBe(asAuditor.validityProofSignature);
     // a stranger's key cannot decrypt, a wrong payment id is rejected, and asking for more than was paid fails
     await expect(verifyConfidentialPayment({ rpc: RPC_URL, ...proof, destinationToken: bTok, elgamalSecret: A.elgamalSecretKey, elgamalPubkey: A.elgamalPubkey, role: "payee", minAmount: 0n })).rejects.toMatchObject({ code: "not_encrypted_to_us" });
     await expect(verifyConfidentialPayment({ rpc: RPC_URL, ...proof, paymentId: "pay_other", destinationToken: bTok, elgamalSecret: B.elgamalSecretKey, elgamalPubkey: B.elgamalPubkey, role: "payee", minAmount: 0n })).rejects.toBeInstanceOf(VerifyError);

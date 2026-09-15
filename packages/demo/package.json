@@ -1,0 +1,29 @@
+{
+  "name": "@sotto/demo",
+  "version": "0.0.1",
+  "private": true,
+  "description": "The sotto demo: a paywalled API, an agent that pays confidentially, and the observer / owner / auditor views.",
+  "license": "Apache-2.0",
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "server": "tsx src/server.ts",
+    "agent": "tsx src/agent.ts",
+    "setup:solana": "tsx src/setup-solana.ts"
+  },
+  "dependencies": {
+    "@solana-program/token-2022": "latest",
+    "@solana/kit": "latest",
+    "@solana/kit-plugin-rpc": "latest",
+    "@solana/kit-plugin-signer": "latest",
+    "@sotto/sdk": "workspace:*",
+    "express": "latest",
+    "viem": "latest"
+  },
+  "devDependencies": {
+    "@types/express": "latest",
+    "@types/node": "latest",
+    "tsx": "latest",
+    "typescript": "latest"
+  }
+}

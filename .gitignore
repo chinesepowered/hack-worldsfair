@@ -25,3 +25,7 @@ coverage/
 .DS_Store
 *.log
 .turbo/
+
+# demo artifacts (contain keys)
+packages/demo/demo-solana.json
+packages/demo/receipts.jsonl

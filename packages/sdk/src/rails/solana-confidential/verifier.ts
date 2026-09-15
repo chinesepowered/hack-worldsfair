@@ -33,7 +33,8 @@ function transferAccountIndices(count: number) {
 export type VerifyConfidentialArgs = {
   rpc: Rpc<SolanaRpcApi> | string;
   transferSignature: string;
-  proofSignatures: string[];
+  /** Transactions that wrote the proof context accounts. Leave empty to discover them from the ledger. */
+  proofSignatures?: string[];
   paymentId: string;
   /** Our token account (the payee's), or — for an auditor — leave undefined to skip the destination check. */
   destinationToken?: Address;
@@ -88,9 +89,11 @@ export async function verifyConfidentialPayment(a: VerifyConfidentialArgs): Prom
   if (a.role === "payee" && a.destinationToken && destinationToken !== a.destinationToken)
     throw new VerifyError("wrong_destination", destinationToken);
 
-  // 2. the validity-proof transaction that wrote that context account
+  // 2. the validity-proof transaction that wrote that context account (discoverable: the account's own history)
+  let candidates = a.proofSignatures ?? [];
+  if (candidates.length === 0) candidates = await discoverProofSignatures(rpc, validityContextAccount, a.transferSignature);
   let found: { sig: string; data: Uint8Array } | undefined;
-  for (const sig of a.proofSignatures) {
+  for (const sig of candidates) {
     const tx = await fetchTx(sig);
     const k = tx.transaction.message.accountKeys as readonly string[];
     for (const ix of tx.transaction.message.instructions) {
@@ -115,6 +118,12 @@ export async function verifyConfidentialPayment(a: VerifyConfidentialArgs): Prom
   const amount = lo.decrypt(a.elgamalSecret, index) + (hi.decrypt(a.elgamalSecret, index) << 16n);
   if (amount < a.minAmount) throw new VerifyError("insufficient_amount", `${amount} < ${a.minAmount}`);
   return { amount, transferSignature: a.transferSignature, validityProofSignature: found.sig, validityContextAccount, sourceToken, destinationToken, mint, slot: transfer.slot };
+}
+
+/** Every transaction that touched a proof context account, except the transfer itself — the ledger remembers closed accounts' history. */
+export async function discoverProofSignatures(rpc: Rpc<SolanaRpcApi>, contextAccount: Address, transferSignature: string): Promise<string[]> {
+  const sigs = await rpc.getSignaturesForAddress(contextAccount, { limit: 20 }).send();
+  return sigs.map(s => s.signature as string).filter(s => s !== transferSignature);
 }
 
 export class VerifyError extends Error {
