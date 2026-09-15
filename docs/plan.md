@@ -18,7 +18,7 @@ Deadline: **Oct 12, 2026, 11:59pm PT**. Last five days are reserved for videos +
 - [x] Backend: Tempo via mppx `tempo` method, policy-gated in `SottoClient`; live facade test on Moderato
 - [x] `packages/mcp-server`: `sotto_fetch`, `sotto_budget`, `sotto_receipts`, `sotto_decisions`, `sotto_set_paused` over stdio; driven end to end by the MCP client SDK in a test
 - [x] `packages/demo`: `setup:solana`, paywalled API + dashboard (observer / owner / auditor with on-chain proof discovery), scripted agent; runs end to end on the local validator
-- [~] README: root + sdk + mcp-server + demo + settler `serve` docs done; per-chain developer sections and live tx links still to add (devnet/testnet deployments)
+- [x] README rewritten for judges (60-second read, verification section, screenshots); package READMEs; settler `serve` docs. Still to add: devnet deployments with public explorer links
 - [ ] License, CI, tests for the policy engine and each backend's happy path
 
 ## Phase 2 — stretch (only after Phase 1 is green)
@@ -27,8 +27,14 @@ Deadline: **Oct 12, 2026, 11:59pm PT**. Last five days are reserved for videos +
 - [ ] Auditor dashboard beyond CLI
 - [ ] Real usage: publish MCP server, post in x402/MCP communities, collect transactions from strangers
 
+## Phase 2.5 — polish (done Sep 15)
+- [x] Dashboard v2 on the project identity: summary strip, three ledger panes with explorer links, policy rail with budget meter + pause/resume, live agent feed; agent runs as a loop with a control endpoint
+- [x] `docs/submission.md`: every portal field drafted; `docs/img/logo.svg`; CI workflow
+- [ ] Devnet run for public explorer links (devnet faucet rate-limited on Sep 15 — retry)
+- [ ] Zcash live send once funded; add the shielded row to the demo
+
 ## Phase 3 — submission (Oct 7–12)
-- [~] `docs/pitch.md` written → 2–3 min pitch video (human)
+- [~] `docs/pitch.md` + `slides.html` (4-slide deck, published as an artifact) → 2–3 min pitch video (human)
 - [~] `docs/demo-script.md` written → ≤3 min demo video (human)
 - [ ] GTM + demand validation writeup; logo; submission form; all chains listed explicitly
 

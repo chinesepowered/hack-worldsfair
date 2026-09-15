@@ -58,12 +58,14 @@ Settlement backends, each a first-class integration (these are the hackathon tra
 - Build everything: `pnpm install && pnpm -r build` (sdk first; mcp-server and demo consume `@sotto/sdk` from `dist`).
 - Tests: `cd packages/sdk && SOLANA_PAYER_KEYFILE=… SOLANA_PAYEE_KEYFILE=… npx vitest run` (needs the local validator);
   `cd packages/mcp-server && … npx vitest run` (spawns the built server over stdio). Add `TEMPO_TEST_PK` + `NODE_USE_ENV_PROXY=1` for live Tempo.
-- Demo: see `packages/demo/README.md`. Start long-running servers with `nohup … & echo $! > <pidfile>` and stop them via the pidfile.
+- Demo: see `packages/demo/README.md`. Start long-running servers **detached**: `(setsid nohup <cmd> > <log> 2>&1 & echo $! > <pidfile>)` — a plain `nohup … &` job dies when the Claude shell ends. Stop via the pidfile, or list with `pgrep -af` and kill by PID.
+- Playwright screenshots: launch Chromium with `proxy: { server: HTTPS_PROXY, bypass: '127.0.0.1,localhost' }` and `executablePath: '/opt/pw-browsers/chromium-1194/chrome-linux/chrome'` (script: scratchpad `pw/shots.mjs`; outputs `docs/img/`).
 - Zcash settler: `services/zcash-settler` builds with `CARGO_TARGET_DIR=<scratch>/zcash-devtool/target cargo build --release` (shares the warm cache);
   binary at `<that target>/release/zcash-settler`; `wallet -w <dir> serve --listen 127.0.0.1:8777 -i <identity> -s zecrocks`.
 - Spikes: `cd packages/sdk && SOLANA_PAYER_KEYFILE=… SOLANA_PAYEE_KEYFILE=… pnpm spike:solana`;
   `TEMPO_TEST_PK=… NODE_USE_ENV_PROXY=1 pnpm exec tsx scripts/spike-tempo-mpp.ts`.
 - Tempo faucet: `curl -X POST https://tempo.xyz/developers/api/faucet -H 'content-type: application/json' -d '{"address":"0x…"}'` (1M of each test stablecoin).
+- Deck + dashboard identity: ledger paper / ink / carmine accent; Bricolage Grotesque + Source Serif 4 + IBM Plex Mono; the redaction-bar device. Keep new UI on those tokens (`slides.html`, `packages/demo/public/index.html`).
 - Zcash testnet: `zcash-devtool wallet -w <dir> init --name sotto -i <age-identity> -n test -s zecrocks`, then `sync`, `list-addresses`, `balance`, `send`. Faucets: fauzec.com API (`POST /api/v1/claim`), zcashfaucet.jinolabs.xyz (browser PoW).
 
 ## Human to-dos (Claude cannot do these)
