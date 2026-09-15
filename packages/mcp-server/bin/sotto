@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# `sotto` from a repo checkout: put this directory on PATH (the npm package installs the same entry point as a bin).
+exec node "$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/dist/cli.js" "$@"

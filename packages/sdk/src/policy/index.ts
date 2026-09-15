@@ -78,6 +78,76 @@ export class MemoryDecisionLog implements DecisionLog {
   async list(agentId?: string) { return this.decisions.filter(d => !agentId || d.agentId === agentId); }
 }
 
+/** Wire form of a decision: bigints as decimal strings, dates as ISO — plus `void` lines that flip an earlier decision. */
+type DecisionLine =
+  | { id: string; at: string; agentId: string; resource: string; network: string; asset: string; amount: string; usd6: string | null; allowed: boolean; reason: string; remaining?: { hour?: string; day?: string; month?: string } }
+  | { void: string; reason: string; at: string };
+
+/**
+ * Append-only JSON-lines decision log, so budgets survive restarts and one-shot processes (the `sotto` CLI runs the
+ * policy engine fresh on every call). A void is appended as its own line rather than rewriting history.
+ */
+export class FileDecisionLog implements DecisionLog {
+  private loaded: Promise<Decision[]> | undefined;
+  constructor(readonly path: string) {}
+  private async load() {
+    if (!this.loaded) {
+      this.loaded = (async () => {
+        const { readFile } = await import("node:fs/promises");
+        const out: Decision[] = [];
+        try {
+          for (const line of (await readFile(this.path, "utf8")).split("\n")) {
+            if (!line.trim()) continue;
+            const l = JSON.parse(line) as DecisionLine;
+            if ("void" in l) {
+              const d = out.find(x => x.id === l.void);
+              if (d && d.allowed) { d.allowed = false; d.reason = `voided: ${l.reason}`; d.remaining = undefined; }
+              continue;
+            }
+            const rem = l.remaining;
+            out.push({
+              ...l, at: new Date(l.at), amount: BigInt(l.amount), usd6: l.usd6 === null ? null : BigInt(l.usd6),
+              remaining: rem ? { hour: rem.hour === undefined ? undefined : BigInt(rem.hour), day: rem.day === undefined ? undefined : BigInt(rem.day), month: rem.month === undefined ? undefined : BigInt(rem.month) } : undefined,
+            });
+          }
+        } catch (e) {
+          if ((e as NodeJS.ErrnoException).code !== "ENOENT") throw e;
+        }
+        return out;
+      })();
+    }
+    return this.loaded;
+  }
+  private async write(line: DecisionLine) {
+    const { appendFile, mkdir } = await import("node:fs/promises");
+    const { dirname } = await import("node:path");
+    await mkdir(dirname(this.path), { recursive: true });
+    await appendFile(this.path, JSON.stringify(line) + "\n", { mode: 0o600 });
+  }
+  async append(d: Decision) {
+    (await this.load()).push(d);
+    const rem = d.remaining;
+    await this.write({
+      id: d.id, at: d.at.toISOString(), agentId: d.agentId, resource: d.resource, network: d.network, asset: d.asset,
+      amount: d.amount.toString(), usd6: d.usd6 === null ? null : d.usd6.toString(), allowed: d.allowed, reason: d.reason,
+      remaining: rem ? { hour: rem.hour?.toString(), day: rem.day?.toString(), month: rem.month?.toString() } : undefined,
+    });
+  }
+  async void(id: string, reason: string) {
+    const d = (await this.load()).find(x => x.id === id);
+    if (d && d.allowed) {
+      d.allowed = false; d.reason = `voided: ${reason}`; d.remaining = undefined;
+      await this.write({ void: id, reason, at: new Date().toISOString() });
+    }
+  }
+  async spentSince(agentId: string, since: Date) {
+    let total = 0n;
+    for (const d of await this.load()) if (d.agentId === agentId && d.allowed && d.at >= since && d.usd6 !== null) total += d.usd6;
+    return total;
+  }
+  async list(agentId?: string) { return (await this.load()).filter(d => !agentId || d.agentId === agentId); }
+}
+
 export class PolicyViolation extends Error {
   constructor(readonly decision: Decision) {
     super(`payment denied: ${decision.reason}`);

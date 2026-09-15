@@ -17,9 +17,10 @@ Deadline: **Oct 12, 2026, 11:59pm PT**. Last five days are reserved for videos +
 - [~] Backend: Zcash shielded — `services/zcash-settler serve` works (/health /address /balance /sync /send /received); TS rail + x402/MPP adapters in progress; end-to-end blocked on testnet funds (faucets down/queued)
 - [x] Backend: Tempo via mppx `tempo` method, policy-gated in `SottoClient`; live facade test on Moderato
 - [x] `packages/mcp-server`: `sotto_fetch`, `sotto_budget`, `sotto_receipts`, `sotto_decisions`, `sotto_set_paused` over stdio; driven end to end by the MCP client SDK in a test
+- [x] The same five operations as the `sotto` CLI + an Agent Skill (`skills/sotto/SKILL.md`); budgets and the kill switch persist in `~/.sotto` (`FileDecisionLog`, pause marker) so they hold across one-shot CLI calls and restarts; CLI tested as a subprocess
 - [x] `packages/demo`: `setup:solana`, paywalled API + dashboard (observer / owner / auditor with on-chain proof discovery), scripted agent; runs end to end on the local validator
 - [x] README rewritten for judges (60-second read, verification section, screenshots); package READMEs; settler `serve` docs. Still to add: devnet deployments with public explorer links
-- [ ] License, CI, tests for the policy engine and each backend's happy path
+- [x] License, CI, tests for the policy engine and each backend's happy path
 
 ## Phase 2 — stretch (only after Phase 1 is green)
 - [ ] `contracts/evm`: EIP-7702 spend-policy delegate; deploy to Base, Ethereum Sepolia, Arbitrum, HyperEVM, Robinhood Chain testnets
@@ -30,6 +31,7 @@ Deadline: **Oct 12, 2026, 11:59pm PT**. Last five days are reserved for videos +
 ## Phase 2.5 — polish (done Sep 15)
 - [x] Dashboard v2 on the project identity: summary strip, three ledger panes with explorer links, policy rail with budget meter + pause/resume, live agent feed; agent runs as a loop with a control endpoint
 - [x] `docs/submission.md`: every portal field drafted; `docs/img/logo.svg`; CI workflow
+- [x] Capy the capybara mascot; one-command demo (`demo.sh start|stop|reset|mcp|env`); every dependency at its latest release (`pnpm -r outdated` empty)
 - [ ] Devnet run for public explorer links (devnet faucet rate-limited on Sep 15 — retry)
 - [ ] Zcash live send once funded; add the shielded row to the demo
 
@@ -42,6 +44,8 @@ Deadline: **Oct 12, 2026, 11:59pm PT**. Last five days are reserved for videos +
 Burner wallets · Agent Miles · UI polish beyond the demo path · any fourth chain before three work.
 
 ## Decisions log
+- 2026-09-15 — Agent integration ships as **both** an MCP server and an Agent Skill + CLI over one `ops.ts`, sharing one state dir. MCP for agents without a shell (hosted agents, host-mediated permission prompts, keys off the agent's machine); the skill for Claude Code / Codex-style agents. Not either/or.
+- 2026-09-15 — `@solana-program/memo` 0.14 defaults to the new Memo v4 program (`Memo4c2…`); the payer pins **Memo v3** (deployed on every cluster) and the verifier accepts both. Found by the test suite after the bump.
 - 2026-09-15 — Auditor verification discovers proof transactions from the proof context account's own signature history; nothing is trusted from the payer.
 - 2026-09-15 — Never `pkill -f <pattern>` from a Claude shell: the pattern matches the calling shell's own command line. Use pidfiles.
 - 2026-09-15 — Solana dev loop runs on a **local test validator** (`solana-test-validator --clone-upgradeable-program` for Token-2022 + SPL Record from devnet); public devnet faucets were dry.

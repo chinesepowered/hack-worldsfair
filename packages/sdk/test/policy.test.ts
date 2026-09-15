@@ -76,3 +76,33 @@ describe("voided decisions", () => {
     expect((await e.log.list("agent-1"))[0]).toMatchObject({ allowed: false, reason: "voided: fetch failed" });
   });
 });
+
+describe("FileDecisionLog", () => {
+  it("replays decisions and voids from disk so budgets survive a restart", async () => {
+    const { mkdtempSync } = await import("node:fs");
+    const { tmpdir } = await import("node:os");
+    const { join } = await import("node:path");
+    const { FileDecisionLog } = await import("../src/index.js");
+    const path = join(mkdtempSync(join(tmpdir(), "sotto-dec-")), "decisions.jsonl");
+
+    const first = new PolicyEngine({ log: new FileDecisionLog(path) });
+    first.setPolicy({ agentId: "agent-1", perDay: 1_000_000n });
+    const a = await first.authorize(intent(300_000n));   // $0.30
+    const b = await first.authorize(intent(300_000n));   // $0.30
+    await first.voidDecision(b.id, "settlement failed");
+    await expect(first.evaluate(intent(800_000n))).resolves.toMatchObject({ allowed: false }); // $0.30 + $0.80 > $1
+
+    // a fresh process: same file, nothing in memory
+    const second = new PolicyEngine({ log: new FileDecisionLog(path) });
+    second.setPolicy({ agentId: "agent-1", perDay: 1_000_000n });
+    const { spent, remaining } = await second.remaining("agent-1");
+    expect(spent.day).toBe(300_000n);
+    expect(remaining.day).toBe(700_000n);
+    const list = await second.log.list("agent-1");
+    expect(list.map(d => [d.id, d.allowed])).toEqual([[a.id, true], [b.id, false]]);
+    expect(list[1]!.reason).toMatch(/^voided: settlement failed/);
+    expect(list[0]!.at).toBeInstanceOf(Date);
+    expect(list[0]!.amount).toBe(300_000n);
+    await expect(second.evaluate(intent(700_000n))).resolves.toMatchObject({ allowed: true });
+  });
+});

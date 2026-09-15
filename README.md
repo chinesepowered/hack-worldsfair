@@ -9,7 +9,7 @@
 <h3 align="center">Confidential, budgeted, auditable payments for AI agents.</h3>
 
 <p align="center">
-  x402 + Machine Payments Protocol compatible · Solana confidential transfers · Zcash shielded · Tempo · MCP server<br>
+  x402 + Machine Payments Protocol compatible · Solana confidential transfers · Zcash shielded · Tempo · MCP server + Agent Skill<br>
   <em>Built solo for Colosseum's Crypto World's Fair, Sep 14 – Oct 12, 2026 · Apache-2.0</em>
 </p>
 
@@ -35,7 +35,8 @@ budgets, host allow/deny lists, expiry, a kill switch.
 **Why it matters for adoption.** It isn't a new protocol. sotto registers as two new **x402** schemes
 (`confidential`, `shielded`) and two new **MPP** methods (`solana-confidential`, `zcash-shielded`), so any
 x402 or MPP agent proceeds — one 402 carries both `PAYMENT-REQUIRED` and `WWW-Authenticate: Payment`.
-Any MCP client gets it through `sotto-mcp-server` with one line of config.
+Any MCP client gets it through `sotto-mcp-server` with one line of config; any agent with a shell gets it as an
+[Agent Skill](skills/sotto/SKILL.md) over the `sotto` CLI. Both doors share one policy, one receipt ledger and one kill switch.
 
 <p align="center"><img src="docs/img/dashboard.png" width="920" alt="The sotto dashboard: public, owner and auditor views of the same payments, with the policy rail"></p>
 
@@ -47,7 +48,7 @@ Any MCP client gets it through `sotto-mcp-server` with one line of config.
 | Auditor decrypts an amount from the ledger | **~0.8 s**, no input from the payer |
 | Tempo payment over MPP on Moderato | **~1.7 s**, policy-gated, receipted |
 | Zcash | settler syncs against `testnet.zec.rocks`; both protocol faces pass; live send pending testnet funds |
-| Tests | 20 integration tests green: local Solana validator, live Tempo, fake and live Zcash settlers, MCP over stdio |
+| Tests | 23 tests, unit and integration: local Solana validator, live Tempo, fake and live Zcash settlers, MCP over stdio, the CLI as a subprocess |
 
 **Meet Capy** — the demo agent: a capybara that buys exactly what it needs, never more, never loudly. **The 4-slide pitch:** [`slides.html`](slides.html) · **Scripts:** [`docs/pitch.md`](docs/pitch.md), [`docs/demo-script.md`](docs/demo-script.md) · **Design:** [`docs/architecture.md`](docs/architecture.md)
 
@@ -75,7 +76,8 @@ ever holds the agent's keys, and a fresh server can verify an old payment with n
 ```
 packages/sdk            @sotto/sdk — policy engine, signed receipts, rails, x402 schemes, MPP methods,
                         SottoServer (payee) and SottoClient (agent)
-packages/mcp-server     sotto-mcp-server — sotto_fetch / sotto_budget / sotto_receipts / sotto_decisions / sotto_set_paused
+packages/mcp-server     sotto-mcp-server + the `sotto` CLI — fetch / budget / receipts / decisions / pause, as MCP tools and as shell commands
+skills/sotto            the Agent Skill (SKILL.md): teaches any agent with a shell to pay through the CLI
 packages/demo           the paywalled API, the looping agent, and the three-viewpoint dashboard
 services/zcash-settler  Rust sidecar (fork of zcash-devtool) holding the Zcash wallet, with an HTTP `serve` API
 docs/                   architecture, plan + decisions log, pitch, demo script, submission drafts
@@ -126,22 +128,38 @@ const res = await agent.fetch("https://api.example.com/premium");   // pays conf
            "SOTTO_SOLANA_KEYFILE": "~/.config/solana/id.json", "SOTTO_SOLANA_MINTS": "[{\"mint\":\"…\",\"decimals\":6}]" } } } }
 ```
 
-## Run the demo (5 minutes)
+**Any agent with a shell — the Agent Skill**
 
 ```bash
-# 1. local Solana with the ZK ElGamal program, plus Token-2022 and SPL Record cloned from devnet
-solana-test-validator --reset --quiet --rpc-port 8899 \
-  --clone-upgradeable-program TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb \
-  --clone-upgradeable-program recr1L3PCGKLbckBqMNcJhuuyU1zgo8nBhfLVsJNwr5 --url https://api.devnet.solana.com
-# 2. a confidential mint with an auditor, a funded agent, a configured API
-cd packages/demo && SOLANA_PAYER_KEYFILE=agent.json SOLANA_PAYEE_KEYFILE=api.json pnpm setup:solana
-# 3. the API + dashboard, then the agent (loops every 5 s until the policy stops it)
-SOLANA_PAYEE_KEYFILE=api.json pnpm server                         # http://127.0.0.1:4020
-LOOP=1 BUDGET_USD=1.5 SOLANA_PAYER_KEYFILE=agent.json pnpm agent
+cp -r skills/sotto ~/.claude/skills/            # or any Agent Skills-compatible runtime
+export PATH="$PWD/packages/mcp-server/bin:$PATH" SOTTO_AGENT_ID=claude SOTTO_POLICY='{"maxPerPaymentUsd":0.5,"perDayUsd":10}' \
+       SOTTO_SOLANA_KEYFILE=~/.config/solana/id.json SOTTO_SOLANA_MINTS='[{"mint":"…","decimals":6}]'
+sotto fetch https://api.example.com/premium     # pays if asked and allowed; exit code 3 means the policy said no
 ```
 
-Open the dashboard, watch the public column stay redacted while the owner column fills, click **decrypt** in
-the auditor column, then hit **Pause spending** and watch the next purchase get refused before it is signed.
+The MCP server and the CLI read the same `SOTTO_*` variables and share one state directory (`~/.sotto`), so budgets,
+receipts and the kill switch are the same whichever door the agent came through.
+
+## Run the demo (one command)
+
+```bash
+pnpm install && pnpm -r build
+packages/demo/demo.sh          # local Solana (ZK ElGamal + Token-2022 + SPL Record), keys, confidential mint, API + dashboard, Capy
+```
+
+Open http://127.0.0.1:4020: watch the public column stay redacted while the owner column fills, click **decrypt**
+in the auditor column, then hit **Pause spending** and watch the next purchase get refused before it is signed.
+
+Then let your own agent in, on the same chain and mint:
+
+```bash
+packages/demo/demo.sh mcp                                   # Claude Code / any MCP client: the config to paste
+eval "$(packages/demo/demo.sh env)" && sotto fetch http://127.0.0.1:4020/premium/quote    # the CLI + Agent Skill door
+```
+
+`demo.sh stop` stops everything; `demo.sh reset` wipes the chain and starts fresh. Needs Node 22, pnpm and the Solana CLI
+(`sh -c "$(curl -sSfL https://release.anza.xyz/stable/install)"`). The manual, step-by-step path is in
+[`packages/demo/README.md`](packages/demo/README.md).
 
 ## Honest status
 

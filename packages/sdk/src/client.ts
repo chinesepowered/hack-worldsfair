@@ -9,7 +9,7 @@ import { Mppx as MppxClient, tempo } from "mppx/client";
 import { Receipt as MppReceipt } from "mppx";
 import type { Account } from "viem";
 import { formatUsd6, StaticPriceSource, type PriceSource } from "./money.js";
-import { PolicyEngine, PolicyViolation, type Decision, type Policy } from "./policy/index.js";
+import { PolicyEngine, PolicyViolation, type Decision, type DecisionLog, type Policy } from "./policy/index.js";
 import { MemoryReceiptStore, ReceiptSigner, newReceiptId, type Receipt, type ReceiptStore, type SignedReceipt } from "./receipts/index.js";
 import { solanaConfidentialClient } from "./mpp/solana-confidential.js";
 import { zcashShieldedClient } from "./mpp/zcash-shielded.js";
@@ -23,6 +23,8 @@ export type SottoClientConfig = {
   policy: Policy;
   prices?: PriceSource;
   receipts?: ReceiptStore;
+  /** Where allow/deny decisions are kept; `FileDecisionLog` makes budgets survive restarts. Default: in memory. */
+  decisionLog?: DecisionLog;
   signer?: ReceiptSigner;
   /** Mints the agent may pay with. `usdPrice` defaults to 1 (a dollar-stable mint); set it for anything else. */
   solana?: { client: ConfidentialPayerClient; signer: ConfidentialSigner; network: string; mints: Array<{ mint: string; decimals: number; usdPrice?: number }> };
@@ -51,7 +53,7 @@ export class SottoClient {
   private readonly als = new AsyncLocalStorage<Pending>();
   private readonly payingFetch: typeof fetch;
   private constructor(readonly config: SottoClientConfig, readonly receiptSigner: ReceiptSigner) {
-    this.policy = new PolicyEngine({ prices: config.prices ?? SottoClient.defaultPrices(config) });
+    this.policy = new PolicyEngine({ prices: config.prices ?? SottoClient.defaultPrices(config), log: config.decisionLog });
     this.policy.setPolicy(config.policy);
     this.receipts = config.receipts ?? new MemoryReceiptStore();
     this.payingFetch = this.buildFetch();

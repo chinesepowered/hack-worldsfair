@@ -16,7 +16,7 @@ encrypted on-chain (Token-2022 confidential transfers on Solana; fully shielded 
 bounded by an owner-set policy enforced before anything is signed: per-payment cap, hourly/daily/monthly
 budgets, host allow/deny lists, a kill switch. And every payment is provable after the fact: the owner or an
 auditor holding a viewing key recovers the exact amount from the chain alone. It plugs into the standards
-agents already use — two new x402 schemes, two new Machine Payments Protocol methods, one MCP server — so
+agents already use — two new x402 schemes, two new Machine Payments Protocol methods, one MCP server, one Agent Skill — so
 adoption is one line of config.
 
 ## Blockchains and tools integrated
@@ -60,7 +60,7 @@ hosted settlement/verification service, and (2) seats for the owner/auditor dash
 receipts, scoped viewing-key disclosure for finance and compliance teams.
 
 **Distribution.** Where agents already pay: the x402 ecosystem (schemes register like any other), MPP's method
-registry, and the MCP server listed in MCP directories. Each rail's ecosystem (Solana, Zcash, Tempo) has an
+registry, and the MCP server listed in MCP directories, the skill in skills registries. Each rail's ecosystem (Solana, Zcash, Tempo) has an
 incentive to promote a working confidential-payments integration.
 
 **Demand validation done so far.** [N conversations with agent builders in SF; what they said; who agreed to

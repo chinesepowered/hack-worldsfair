@@ -1,11 +1,12 @@
 {
   "name": "sotto-mcp-server",
   "version": "0.0.1",
-  "description": "MCP server that lets an AI agent pay for web resources confidentially, within an owner-set policy.",
+  "description": "MCP server and `sotto` CLI that let an AI agent pay for web resources confidentially, within an owner-set policy.",
   "license": "Apache-2.0",
   "type": "module",
   "bin": {
-    "sotto-mcp-server": "./dist/index.js"
+    "sotto-mcp-server": "./dist/index.js",
+    "sotto": "./dist/cli.js"
   },
   "main": "./dist/index.js",
   "files": [

@@ -30,7 +30,7 @@ describe.skipIf(!haveLocalValidator)("sotto-mcp-server over stdio (local validat
         ...(process.env as Record<string, string>),
         SOTTO_AGENT_ID: "mcp-agent",
         SOTTO_POLICY: JSON.stringify({ maxPerPaymentUsd: 0.5, perDayUsd: 0.5, allowHosts: ["127.0.0.1"] }),
-        SOTTO_RECEIPTS_FILE: join(mkdtempSync(join(tmpdir(), "sotto-mcp-")), "receipts.jsonl"),
+        SOTTO_STATE_DIR: mkdtempSync(join(tmpdir(), "sotto-mcp-")),
         SOTTO_SOLANA_RPC_URL: RPC_URL, SOTTO_SOLANA_KEYFILE: process.env.SOLANA_PAYER_KEYFILE!, SOTTO_SOLANA_NETWORK: NETWORK,
         SOTTO_SOLANA_MINTS: JSON.stringify([{ mint: fx.mint, decimals: fx.decimals }]),
       },

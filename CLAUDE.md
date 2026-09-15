@@ -22,7 +22,9 @@ Settlement backends, each a first-class integration (these are the hackathon tra
 
 ## Repo layout
 - `packages/sdk` — TypeScript: x402 v2 client/server extensions, policy engine, Solana CT + EVM + Tempo backends
-- `packages/mcp-server` — MCP server exposing pay/fetch tools
+- `packages/mcp-server` — MCP server **and** the `sotto` CLI (`bin/sotto`) over the same five operations (`src/ops.ts`); state in `~/.sotto`
+  (`SOTTO_STATE_DIR`): receipts, decisions (budgets survive restarts), the pause marker
+- `skills/sotto` — the Agent Skill (`SKILL.md`) for agents with a shell; symlinked at `.claude/skills/sotto`
 - `packages/demo` — demo paywalled API + agent + owner/auditor dashboard (the 3-minute demo path)
 - `services/zcash-settler` — Rust: shielded send + viewing-key watcher, HTTP API for the SDK
 - `contracts/evm` — Solidity: spend-policy delegate (EIP-7702) + deploy scripts
@@ -58,7 +60,8 @@ Settlement backends, each a first-class integration (these are the hackathon tra
 - Build everything: `pnpm install && pnpm -r build` (sdk first; mcp-server and demo consume `@sotto/sdk` from `dist`).
 - Tests: `cd packages/sdk && SOLANA_PAYER_KEYFILE=… SOLANA_PAYEE_KEYFILE=… npx vitest run` (needs the local validator);
   `cd packages/mcp-server && … npx vitest run` (spawns the built server over stdio). Add `TEMPO_TEST_PK` + `NODE_USE_ENV_PROXY=1` for live Tempo.
-- Demo: see `packages/demo/README.md`. Start long-running servers **detached**: `(setsid nohup <cmd> > <log> 2>&1 & echo $! > <pidfile>)` — a plain `nohup … &` job dies when the Claude shell ends. Stop via the pidfile, or list with `pgrep -af` and kill by PID.
+- Demo: `packages/demo/demo.sh` (`start|stop|reset|mcp|env`); `eval "$(./demo.sh env)"` configures the CLI. Background processes
+  started here do **not** survive a user interrupt or a session resume — re-run `demo.sh` before integration tests. Start long-running servers **detached**: `(setsid nohup <cmd> > <log> 2>&1 & echo $! > <pidfile>)` — a plain `nohup … &` job dies when the Claude shell ends. Stop via the pidfile, or list with `pgrep -af` and kill by PID.
 - Playwright screenshots: launch Chromium with `proxy: { server: HTTPS_PROXY, bypass: '127.0.0.1,localhost' }` and `executablePath: '/opt/pw-browsers/chromium-1194/chrome-linux/chrome'` (script: scratchpad `pw/shots.mjs`; outputs `docs/img/`).
 - Zcash settler: `services/zcash-settler` builds with `CARGO_TARGET_DIR=<scratch>/zcash-devtool/target cargo build --release` (shares the warm cache);
   binary at `<that target>/release/zcash-settler`; `wallet -w <dir> serve --listen 127.0.0.1:8777 -i <identity> -s zecrocks`.

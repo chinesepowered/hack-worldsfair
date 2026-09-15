@@ -1,17 +1,12 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { formatUsd6, PolicyViolation, type SottoClient } from "@sotto/sdk";
+import { PolicyViolation, type SottoClient } from "@sotto/sdk";
 import { z } from "zod";
+import type { KillSwitch } from "./config.js";
+import { budgetOp, CHARACTER_LIMIT, decisionsOp, denialMessage, fetchOp, receiptsOp, setPausedOp } from "./ops.js";
 
-const CHARACTER_LIMIT = 25_000;
+const ok = (out: Record<string, unknown>) => ({ content: [{ type: "text" as const, text: JSON.stringify(out) }], structuredContent: out });
 
-const usd = (v: bigint | null | undefined) => (v === undefined || v === null ? undefined : formatUsd6(v));
-const receiptView = (r: NonNullable<Awaited<ReturnType<SottoClient["listReceipts"]>>[number]>) => ({
-  id: r.id, at: r.at, resource: r.resource, protocol: r.protocol, scheme: r.scheme, network: r.network, asset: r.asset,
-  amount: r.amount, decimals: r.decimals, usd: (r.details as { usd?: string } | undefined)?.usd, confidential: r.confidential,
-  transactions: r.transactions, paymentId: r.paymentId,
-});
-
-export function registerTools(server: McpServer, client: SottoClient): void {
+export function registerTools(server: McpServer, client: SottoClient, kill: KillSwitch): void {
   server.registerTool(
     "sotto_fetch",
     {
@@ -32,31 +27,16 @@ export function registerTools(server: McpServer, client: SottoClient): void {
         truncated: z.boolean(),
         payment: z.object({
           scheme: z.string(), network: z.string(), asset: z.string(), amount: z.string(), usd: z.string().optional(),
-          confidential: z.boolean(), transactions: z.array(z.string()), receiptId: z.string(),
+          confidential: z.boolean(), transactions: z.array(z.string()), receiptId: z.string(), paymentId: z.string(),
         }).optional(),
       },
       annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: true },
     },
-    async ({ url, method, headers, body, max_chars }) => {
+    async (args) => {
       try {
-        const { response, receipt } = await client.fetchDetailed(url, { method, headers, body: method === "GET" ? undefined : body });
-        const text = await response.text();
-        const truncated = text.length > max_chars;
-        const keep = ["content-type", "content-length", "payment-response", "payment-receipt", "www-authenticate", "payment-required"];
-        const out = {
-          status: response.status,
-          headers: Object.fromEntries([...response.headers.entries()].filter(([k]) => keep.includes(k.toLowerCase()))),
-          body: truncated ? text.slice(0, max_chars) : text,
-          truncated,
-          payment: receipt ? { scheme: receipt.scheme, network: receipt.network, asset: receipt.asset, amount: receipt.amount, usd: (receipt.details as { usd?: string } | undefined)?.usd, confidential: receipt.confidential, transactions: receipt.transactions, receiptId: receipt.id } : undefined,
-        };
-        return { content: [{ type: "text", text: JSON.stringify(out) }], structuredContent: out };
+        return ok(await fetchOp(client, args));
       } catch (e) {
-        if (e instanceof PolicyViolation) {
-          const { remaining } = await client.policy.remaining(client.config.agentId);
-          const msg = `Payment denied by the owner's policy: ${e.decision.reason}. Remaining budget — hour: ${usd(remaining.hour) ?? "n/a"}, day: ${usd(remaining.day) ?? "n/a"}, month: ${usd(remaining.month) ?? "n/a"}. Ask the owner to raise the limit or use a cheaper resource.`;
-          return { content: [{ type: "text", text: msg }], isError: true };
-        }
+        if (e instanceof PolicyViolation) return { content: [{ type: "text", text: await denialMessage(client, e) }], isError: true };
         return { content: [{ type: "text", text: `fetch failed: ${(e as Error).message}` }], isError: true };
       }
     },
@@ -72,20 +52,12 @@ export function registerTools(server: McpServer, client: SottoClient): void {
         agentId: z.string(), paused: z.boolean(), maxPerPaymentUsd: z.string().optional(),
         remainingUsd: z.object({ hour: z.string().optional(), day: z.string().optional(), month: z.string().optional() }),
         spentUsd: z.object({ hour: z.string(), day: z.string(), month: z.string() }),
+        limitsUsd: z.object({ hour: z.string().optional(), day: z.string().optional(), month: z.string().optional() }),
         allowHosts: z.array(z.string()).optional(), denyHosts: z.array(z.string()).optional(), allowNetworks: z.array(z.string()).optional(), expiresAt: z.string().optional(),
       },
       annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     },
-    async () => {
-      const { policy, remaining, spent } = await client.policy.remaining(client.config.agentId);
-      const out = {
-        agentId: client.config.agentId, paused: Boolean(policy?.paused), maxPerPaymentUsd: usd(policy?.maxPerPayment),
-        remainingUsd: { hour: usd(remaining.hour), day: usd(remaining.day), month: usd(remaining.month) },
-        spentUsd: { hour: formatUsd6(spent.hour), day: formatUsd6(spent.day), month: formatUsd6(spent.month) },
-        allowHosts: policy?.allowHosts, denyHosts: policy?.denyHosts, allowNetworks: policy?.allowNetworks, expiresAt: policy?.expiresAt?.toISOString(),
-      };
-      return { content: [{ type: "text", text: JSON.stringify(out) }], structuredContent: out };
-    },
+    async () => ok(await budgetOp(client)),
   );
 
   server.registerTool(
@@ -97,11 +69,7 @@ export function registerTools(server: McpServer, client: SottoClient): void {
       outputSchema: { receipts: z.array(z.object({ id: z.string(), at: z.string(), resource: z.string(), protocol: z.string(), scheme: z.string(), network: z.string(), asset: z.string(), amount: z.string(), decimals: z.number(), usd: z.string().optional(), confidential: z.boolean(), transactions: z.array(z.string()), paymentId: z.string() })), total: z.number() },
       annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     },
-    async ({ limit, since }) => {
-      const all = (await client.receipts.list({ agentId: client.config.agentId, since: since ? new Date(since) : undefined })).sort((a, b) => b.at.localeCompare(a.at));
-      const out = { receipts: all.slice(0, limit).map(receiptView), total: all.length };
-      return { content: [{ type: "text", text: JSON.stringify(out) }], structuredContent: out };
-    },
+    async (args) => ok(await receiptsOp(client, args)),
   );
 
   server.registerTool(
@@ -113,26 +81,18 @@ export function registerTools(server: McpServer, client: SottoClient): void {
       outputSchema: { decisions: z.array(z.object({ id: z.string(), at: z.string(), resource: z.string(), network: z.string(), asset: z.string(), amount: z.string(), usd: z.string().optional(), allowed: z.boolean(), reason: z.string() })) },
       annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     },
-    async ({ limit }) => {
-      const list = (await client.decisions()).slice(-limit).reverse();
-      const out = { decisions: list.map(d => ({ id: d.id, at: d.at.toISOString(), resource: d.resource, network: d.network, asset: d.asset, amount: d.amount.toString(), usd: usd(d.usd6), allowed: d.allowed, reason: d.reason })) };
-      return { content: [{ type: "text", text: JSON.stringify(out) }], structuredContent: out };
-    },
+    async (args) => ok(await decisionsOp(client, args)),
   );
 
   server.registerTool(
     "sotto_set_paused",
     {
       title: "Pause or resume spending",
-      description: "The kill switch. While paused, every payment is refused; fetches of free resources still work. Resuming re-enables the policy as configured.",
+      description: "The kill switch. While paused, every payment is refused; fetches of free resources still work. The state persists on disk, so it holds across restarts and is shared with the `sotto` CLI. Resuming re-enables the policy as configured.",
       inputSchema: { paused: z.boolean() },
       outputSchema: { paused: z.boolean() },
       annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     },
-    async ({ paused }) => {
-      client.pause(paused);
-      const out = { paused };
-      return { content: [{ type: "text", text: JSON.stringify(out) }], structuredContent: out };
-    },
+    async ({ paused }) => ok(await setPausedOp(client, kill, paused)),
   );
 }

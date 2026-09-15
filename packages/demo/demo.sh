@@ -6,6 +6,7 @@
 #   ./demo.sh stop     stop the API, the agent and the validator
 #   ./demo.sh reset    stop, wipe the local chain and demo state, start fresh
 #   ./demo.sh mcp      print the Claude Code MCP config for the sotto server (agent keys, local chain)
+#   ./demo.sh env      print `export SOTTO_*` lines for the sotto CLI / Agent Skill — eval "$(./demo.sh env)"
 #
 # State lives in $DEMO_DIR (default ~/.sotto-demo): keys, ledger, logs, pids. Nothing is written to the repo
 # except packages/demo/demo-solana.json and receipts.jsonl, both gitignored.
@@ -33,19 +34,32 @@ case "${1:-start}" in
   reset)
     for p in agent server validator; do stop_one $p; done
     rm -rf "$DEMO_DIR/ledger" "$HERE/demo-solana.json" "$HERE/receipts.jsonl"; say "state wiped"; exec "$0" start ;;
-  mcp)
+  mcp|env)
     [ -f "$HERE/demo-solana.json" ] || { echo "run ./demo.sh first"; exit 1; }
     MINT=$(node -p "require('$HERE/demo-solana.json').mint"); DEC=$(node -p "require('$HERE/demo-solana.json').decimals"); NET=$(node -p "require('$HERE/demo-solana.json').network")
-    cat <<JSON
+    # the MCP server and the CLI share one state dir: receipts, budget and the kill switch are the same for both
+    if [ "$1" = mcp ]; then cat <<JSON
 { "mcpServers": { "sotto": { "command": "node", "args": ["$ROOT/packages/mcp-server/dist/index.js"],
   "env": { "SOTTO_AGENT_ID": "claude", "SOTTO_POLICY": "{\\"maxPerPaymentUsd\\":1,\\"perDayUsd\\":5,\\"allowHosts\\":[\\"127.0.0.1\\",\\"localhost\\"]}",
-           "SOTTO_RECEIPTS_FILE": "$DEMO_DIR/claude-receipts.jsonl",
+           "SOTTO_STATE_DIR": "$DEMO_DIR/claude",
            "SOTTO_SOLANA_RPC_URL": "$RPC", "SOTTO_SOLANA_KEYFILE": "$DEMO_DIR/agent.json",
            "SOTTO_SOLANA_NETWORK": "$NET", "SOTTO_SOLANA_MINTS": "[{\\"mint\\":\\"$MINT\\",\\"decimals\\":$DEC}]" } } } }
 JSON
-    echo; echo "# Claude Code: claude mcp add-json sotto '<the sotto object above>'   — or save as .mcp.json in the repo root"; exit 0 ;;
+      echo; echo "# Claude Code: claude mcp add-json sotto '<the sotto object above>'   — or save as .mcp.json in the repo root"
+    else cat <<SH
+export SOTTO_AGENT_ID=claude
+export SOTTO_POLICY='{"maxPerPaymentUsd":1,"perDayUsd":5,"allowHosts":["127.0.0.1","localhost"]}'
+export SOTTO_STATE_DIR="$DEMO_DIR/claude"
+export SOTTO_SOLANA_RPC_URL="$RPC"
+export SOTTO_SOLANA_KEYFILE="$DEMO_DIR/agent.json"
+export SOTTO_SOLANA_NETWORK="$NET"
+export SOTTO_SOLANA_MINTS='[{"mint":"$MINT","decimals":$DEC}]'
+export PATH="$ROOT/packages/mcp-server/bin:\$PATH"
+# eval "\$(./demo.sh env)"  then:  sotto budget · sotto fetch http://127.0.0.1:$PORT/premium/quote · sotto receipts
+SH
+    fi; exit 0 ;;
   start) ;;
-  *) echo "usage: $0 [start|stop|reset|mcp]"; exit 1 ;;
+  *) echo "usage: $0 [start|stop|reset|mcp|env]"; exit 1 ;;
 esac
 
 need pnpm "https://pnpm.io/installation"
@@ -101,6 +115,7 @@ cat <<TXT
   pause       curl -X POST http://127.0.0.1:$PORT/api/agent/pause     (or the button on the dashboard)
   logs        $DEMO_DIR/{validator,server,agent}.log
   mcp         ./demo.sh mcp   →  Claude Code config so Claude can pay through sotto too
+  cli/skill   eval "\$(./demo.sh env)" && sotto fetch http://127.0.0.1:$PORT/premium/quote   (the Agent Skill in skills/sotto)
   stop        ./demo.sh stop
 
 TXT
