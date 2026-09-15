@@ -79,7 +79,7 @@ say "agent $AGENT_PK · api $API_PK"
 NEED_SETUP=1
 if [ -f "$HERE/demo-solana.json" ]; then
   MINT=$(node -p "require('$HERE/demo-solana.json').mint")
-  curl -s -m 5 "$RPC" -X POST -H 'content-type: application/json' -d "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"getAccountInfo\",\"params\":[\"$MINT\"]}" | grep -q '"owner"' && NEED_SETUP=0
+  curl -s -m 5 "$RPC" -X POST -H 'content-type: application/json' -d "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"getAccountInfo\",\"params\":[\"$MINT\",{\"encoding\":\"base64\"}]}" | grep -q '"owner"' && NEED_SETUP=0
 fi
 if [ "$NEED_SETUP" = 1 ]; then
   say "creating the confidential mint, the auditor key, and Capy's funded balance"

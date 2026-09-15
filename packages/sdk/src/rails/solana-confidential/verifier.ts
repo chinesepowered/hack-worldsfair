@@ -15,7 +15,10 @@ import { addressToBytes } from "./keys.js";
 
 export const ZK_ELGAMAL_PROOF_PROGRAM = "ZkE1Gama1Proof11111111111111111111111111111" as Address;
 export const TOKEN_2022_PROGRAM = "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb" as Address;
+/** Memo v3 — deployed on every cluster, so the payer pins it explicitly (memo@0.14 defaults to the new v4 deployment). */
 export const MEMO_PROGRAM = "MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr" as Address;
+/** Memo programs the verifier accepts: v3 (what we send) and the newer v4 (`@solana-program/memo` ≥ 0.14 default). */
+export const MEMO_PROGRAMS: ReadonlySet<string> = new Set([MEMO_PROGRAM, "Memo4c2pN8afCj432Lb7RMVKi9PbQnnW7ewFFaV3oAH"]);
 const ZK_IX_VERIFY_BATCHED_GROUPED_3_HANDLES_VALIDITY = 12;
 const TOKEN22_IX_CONFIDENTIAL_TRANSFER_EXTENSION = 27;
 const CT_SUB_IX_TRANSFER = 7;
@@ -70,7 +73,7 @@ export async function verifyConfidentialPayment(a: VerifyConfidentialArgs): Prom
   const transfer = await fetchTx(a.transferSignature);
   const keys = transfer.transaction.message.accountKeys as readonly string[];
   const ixs = transfer.transaction.message.instructions;
-  const memoIx = ixs.find(ix => keys[ix.programIdIndex] === MEMO_PROGRAM);
+  const memoIx = ixs.find(ix => MEMO_PROGRAMS.has(keys[ix.programIdIndex]));
   if (!memoIx) throw new VerifyError("memo_missing", a.transferSignature);
   const memo = new TextDecoder().decode(new Uint8Array(b58.encode(memoIx.data)));
   if (memo !== a.paymentId) throw new VerifyError("payment_id_mismatch", `memo=${memo}`);

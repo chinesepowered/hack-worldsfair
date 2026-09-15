@@ -17,6 +17,7 @@ import {
   type TransactionSigner,
 } from "@solana/kit";
 import type { ConfidentialKeys } from "./keys.js";
+import { MEMO_PROGRAM } from "./verifier.js";
 
 /** The subset of a kit client we need: an RPC and a way to run a multi-transaction plan. */
 export type ConfidentialPayerClient = {
@@ -57,7 +58,7 @@ export async function payConfidential(args: {
     authority, amount, sourceElgamalKeypair: keys.elgamalKeypair, aesKey: keys.aesKey, payer, rpc: client.rpc,
   });
   // The memo must ride on the same transaction as the transfer — append it to the plan's last leaf.
-  const plan = appendToLastLeaf(transferPlan, singleInstructionPlan(getAddMemoInstruction({ memo: paymentId, signers: [authority] })));
+  const plan = appendToLastLeaf(transferPlan, singleInstructionPlan(getAddMemoInstruction({ memo: paymentId, signers: [authority] }, { programAddress: MEMO_PROGRAM })));
   const result = await client.sendTransactions(plan);
   const signatures = collectSignatures(result);
   if (signatures.length === 0) throw new Error("confidential transfer produced no signatures");
