@@ -4,12 +4,12 @@ Living document. Update status here every session; decisions go in the log at th
 Deadline: **Oct 12, 2026, 11:59pm PT**. Last five days are reserved for videos + GTM + submission.
 
 ## Phase 0 — de-risk (first 3 days)
-- [ ] Zcash: shielded send with memo on testnet from Rust; detect it via viewing key (settler prototype)
-- [ ] Zcash: testnet funding path (faucet claim automated or manual)
-- [ ] Solana: Token-2022 confidential transfer end to end on devnet from TypeScript
-- [ ] Tempo: testnet RPC + faucet + one TIP-20 transfer with memo; read MPP spec (human: workshop Sep 16)
-- [ ] x402 v2: understand scheme/network extension points; decide how confidential settlement plugs in
-- [ ] Decide: Base vs Tempo as the third must-ship backend (Tempo if MPP integration is tractable)
+- [~] Zcash: wallet init + sync via `testnet.zec.rocks:443` works from Rust (zcash-devtool, patched to trust the session CA). Send + viewing-key detection blocked on testnet funds
+- [~] Zcash: funding — fauzec.com API down (`runtime_unavailable`); jinolabs faucet claim **queued** for our address, auto-sends when their node catches up
+- [~] Solana: local validator (ZK ElGamal native + devnet Token-2022 cloned). From TS: CT mint with auditor ✓, configure accounts ✓, deposit + apply + decrypt ✓. Transfer needs the record-backed plan (range proof > 1 tx) — in progress
+- [x] Tempo: faucet API funded a test key (1M pathUSD). **MPP end to end ✓** — 402 challenge → agent pays 0.01 pathUSD on Moderato → 200 + Payment-Receipt in 1.7s (`scripts/spike-tempo-mpp.ts`)
+- [x] x402 v2: `SchemeNetworkClient/Server/Facilitator` interfaces; new schemes `confidential` + `shielded`; `payment-identifier` extension carries the id (see architecture.md)
+- [x] Decide: **Tempo via MPP is must-ship** (proven). Base x402 `exact` is the cheap fourth
 
 ## Phase 1 — must-ship
 - [ ] `packages/sdk`: x402 v2 client + server middleware, policy engine (budget/allowlist/expiry)
@@ -36,6 +36,9 @@ Deadline: **Oct 12, 2026, 11:59pm PT**. Last five days are reserved for videos +
 Burner wallets · Agent Miles · UI polish beyond the demo path · any fourth chain before three work.
 
 ## Decisions log
+- 2026-09-15 — Solana dev loop runs on a **local test validator** (`solana-test-validator --clone-upgradeable-program` for Token-2022 + SPL Record from devnet); public devnet faucets were dry.
+- 2026-09-15 — token-2022 **0.17** API: `getCreateMintInstructionPlan(client, input)` (async); helpers take `Token` data (`account.data`), not the `Account` wrapper; multi-tx plans go through `client.sendTransactions`.
+- 2026-09-15 — zcash-devtool patched (`with_extra_ca`) to trust `SSL_CERT_FILE`; the sandbox proxy re-terminates TLS. Not needed on a normal machine.
 - 2026-09-15 — Working name **sotto** (sotto voce). Trivial to rename.
 - 2026-09-15 — Build on x402 **v2** (`@x402/*` 2.x), not legacy `x402` 1.x. Confidential settlement as
   extensions of the standard, not a fork.

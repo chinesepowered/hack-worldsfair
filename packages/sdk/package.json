@@ -1,0 +1,47 @@
+{
+  "name": "@sotto/sdk",
+  "version": "0.0.1",
+  "description": "Confidential, budgeted payments for AI agents — x402 and MPP compatible.",
+  "license": "Apache-2.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "vitest run",
+    "spike:solana": "tsx scripts/spike-solana-ct.ts"
+  },
+  "dependencies": {
+    "@solana-program/compute-budget": "latest",
+    "@solana-program/memo": "latest",
+    "@solana-program/system": "latest",
+    "@solana-program/token-2022": "latest",
+    "@solana/kit": "latest",
+    "@solana/kit-plugin-rpc": "^0.19.0",
+    "@solana/kit-plugin-signer": "^0.19.0",
+    "@solana/zk-sdk": "latest",
+    "@x402/core": "latest",
+    "@x402/evm": "latest",
+    "@x402/express": "latest",
+    "@x402/fetch": "latest",
+    "@x402/svm": "latest",
+    "mppx": "latest",
+    "viem": "latest",
+    "zod": "latest"
+  },
+  "devDependencies": {
+    "@types/node": "latest",
+    "tsx": "latest",
+    "typescript": "latest",
+    "vitest": "latest"
+  }
+}
