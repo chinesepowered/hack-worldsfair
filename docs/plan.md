@@ -12,9 +12,9 @@ Deadline: **Oct 12, 2026, 11:59pm PT**. Last five days are reserved for videos +
 - [x] Decide: **Tempo via MPP is must-ship** (proven). Base x402 `exact` is the cheap fourth
 
 ## Phase 1 — must-ship
-- [ ] `packages/sdk`: x402 v2 client + server middleware, policy engine (budget/allowlist/expiry)
-- [ ] Backend: Solana confidential (`@solana-program/token-2022/confidential`) + auditor key
-- [ ] Backend: Zcash shielded via `services/zcash-settler` (payment ID in memo, viewing-key watcher)
+- [~] `packages/sdk`: policy engine + receipts done (unit-tested); x402 + MPP adapters done for Solana; client/server facades next
+- [x] Backend: Solana confidential — rail (`src/rails/solana-confidential`), x402 scheme `confidential` (`src/x402`), MPP method `solana-confidential` (`src/mpp`); HTTP integration tests green on the local validator
+- [~] Backend: Zcash shielded — `services/zcash-settler serve` works (/health /address /balance /sync /send /received); TS rail + x402/MPP adapters in progress; end-to-end blocked on testnet funds (faucets down/queued)
 - [ ] Backend: Tempo (MPP + TIP-20 memo) — or Base x402 `exact` if Tempo slips
 - [ ] `packages/mcp-server`: `pay`, `fetch_paid`, `budget_status` tools
 - [ ] `packages/demo`: paywalled API + agent + observer/owner/auditor views (the demo path)

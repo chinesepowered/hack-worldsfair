@@ -32,13 +32,16 @@
     "@x402/core": "latest",
     "@x402/evm": "latest",
     "@x402/express": "latest",
+    "@x402/extensions": "^2.25.0",
     "@x402/fetch": "latest",
     "@x402/svm": "latest",
+    "express": "^5.2.1",
     "mppx": "latest",
     "viem": "latest",
     "zod": "latest"
   },
   "devDependencies": {
+    "@types/express": "^5.0.6",
     "@types/node": "latest",
     "tsx": "latest",
     "typescript": "latest",
