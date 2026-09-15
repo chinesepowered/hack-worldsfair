@@ -6,7 +6,7 @@ Deadline: **Oct 12, 2026, 11:59pm PT**. Last five days are reserved for videos +
 ## Phase 0 — de-risk (first 3 days)
 - [~] Zcash: wallet init + sync via `testnet.zec.rocks:443` works from Rust (zcash-devtool, patched to trust the session CA). Send + viewing-key detection blocked on testnet funds
 - [~] Zcash: funding — fauzec.com API down (`runtime_unavailable`); jinolabs faucet claim **queued** for our address, auto-sends when their node catches up
-- [~] Solana: local validator (ZK ElGamal native + devnet Token-2022 cloned). From TS: CT mint with auditor ✓, configure accounts ✓, deposit + apply + decrypt ✓. Transfer needs the record-backed plan (range proof > 1 tx) — in progress
+- [x] Solana: **confidential transfer end to end from TS ✓** on a local validator (ZK ElGamal native; Token-2022 + SPL Record cloned from devnet). Mint with auditor → accounts → deposit → record-backed transfer (5 txs) with payment-id memo → payee decrypts exact amount; public `amount` stays 0 (`scripts/spike-solana-ct.ts`)
 - [x] Tempo: faucet API funded a test key (1M pathUSD). **MPP end to end ✓** — 402 challenge → agent pays 0.01 pathUSD on Moderato → 200 + Payment-Receipt in 1.7s (`scripts/spike-tempo-mpp.ts`)
 - [x] x402 v2: `SchemeNetworkClient/Server/Facilitator` interfaces; new schemes `confidential` + `shielded`; `payment-identifier` extension carries the id (see architecture.md)
 - [x] Decide: **Tempo via MPP is must-ship** (proven). Base x402 `exact` is the cheap fourth

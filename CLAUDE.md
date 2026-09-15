@@ -48,6 +48,18 @@ Settlement backends, each a first-class integration (these are the hackathon tra
 - Chromium + Playwright are preinstalled (`/opt/pw-browsers`) — usable for browser-PoW faucets.
 - Reference clones live in the scratchpad (`coinbase/x402`, `zcash/zcash-devtool`) — re-clone if gone.
 
+## Commands & local infra
+- Solana local validator (needed for confidential transfers; public devnet faucets are unreliable):
+  `solana-test-validator --ledger <dir> --reset --quiet --rpc-port 8899 --bind-address 127.0.0.1 \
+   --clone-upgradeable-program TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb \
+   --clone-upgradeable-program recr1L3PCGKLbckBqMNcJhuuyU1zgo8nBhfLVsJNwr5 --url https://api.devnet.solana.com`
+  Stop it with `pkill -x solana-test-validator`-style exact matching — **never `pkill -f`** (it kills the calling shell).
+  Solana CLI lives at `~/.local/share/solana/install/active_release/bin` (re-install: `sh -c "$(curl -sSfL https://release.anza.xyz/stable/install)"`).
+- Spikes: `cd packages/sdk && SOLANA_PAYER_KEYFILE=… SOLANA_PAYEE_KEYFILE=… pnpm spike:solana`;
+  `TEMPO_TEST_PK=… NODE_USE_ENV_PROXY=1 pnpm exec tsx scripts/spike-tempo-mpp.ts`.
+- Tempo faucet: `curl -X POST https://tempo.xyz/developers/api/faucet -H 'content-type: application/json' -d '{"address":"0x…"}'` (1M of each test stablecoin).
+- Zcash testnet: `zcash-devtool wallet -w <dir> init --name sotto -i <age-identity> -n test -s zecrocks`, then `sync`, `list-addresses`, `balance`, `send`. Faucets: fauzec.com API (`POST /api/v1/claim`), zcashfaucet.jinolabs.xyz (browser PoW).
+
 ## Human to-dos (Claude cannot do these)
 - [ ] Register: https://colosseum.com/arena/hackathon/register?entry=worldsfair (accept rules)
 - [ ] Email hackathon@colosseum.com: (1) does a part-time CCSF student qualify for the University Award?
