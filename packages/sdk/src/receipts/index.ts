@@ -80,3 +80,39 @@ const toBase64 = (b: Uint8Array) => Buffer.from(b).toString("base64");
 /** Copy into a fresh ArrayBuffer — WebCrypto wants BufferSource, not a possibly-shared view. */
 const ab = (u8: Uint8Array): ArrayBuffer => u8.buffer.slice(u8.byteOffset, u8.byteOffset + u8.byteLength) as ArrayBuffer;
 const fromBase64 = (s: string) => new Uint8Array(Buffer.from(s, "base64"));
+
+/** Append-only JSON-lines receipt store on disk — the owner's ledger. */
+export class FileReceiptStore implements ReceiptStore {
+  private loaded: Promise<Map<string, SignedReceipt>> | undefined;
+  constructor(readonly path: string) {}
+  private async load() {
+    if (!this.loaded) {
+      this.loaded = (async () => {
+        const { readFile } = await import("node:fs/promises");
+        const map = new Map<string, SignedReceipt>();
+        try {
+          for (const line of (await readFile(this.path, "utf8")).split("\n")) {
+            if (!line.trim()) continue;
+            const r = JSON.parse(line) as SignedReceipt;
+            map.set(r.id, r);
+          }
+        } catch (e) {
+          if ((e as NodeJS.ErrnoException).code !== "ENOENT") throw e;
+        }
+        return map;
+      })();
+    }
+    return this.loaded;
+  }
+  async put(r: SignedReceipt) {
+    const { appendFile, mkdir } = await import("node:fs/promises");
+    const { dirname } = await import("node:path");
+    (await this.load()).set(r.id, r);
+    await mkdir(dirname(this.path), { recursive: true });
+    await appendFile(this.path, JSON.stringify(r) + "\n", { mode: 0o600 });
+  }
+  async get(id: string) { return (await this.load()).get(id); }
+  async list(filter: { agentId?: string; since?: Date } = {}) {
+    return [...(await this.load()).values()].filter(r => (!filter.agentId || r.agentId === filter.agentId) && (!filter.since || new Date(r.at) >= filter.since));
+  }
+}

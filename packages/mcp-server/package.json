@@ -1,0 +1,32 @@
+{
+  "name": "sotto-mcp-server",
+  "version": "0.0.1",
+  "description": "MCP server that lets an AI agent pay for web resources confidentially, within an owner-set policy.",
+  "license": "Apache-2.0",
+  "type": "module",
+  "bin": { "sotto-mcp-server": "./dist/index.js" },
+  "main": "./dist/index.js",
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/index.js",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "latest",
+    "@solana/kit": "latest",
+    "@solana/kit-plugin-rpc": "latest",
+    "@solana/kit-plugin-signer": "latest",
+    "@sotto/sdk": "workspace:*",
+    "viem": "latest",
+    "zod": "latest"
+  },
+  "devDependencies": {
+    "@types/node": "latest",
+    "express": "latest",
+    "@types/express": "latest",
+    "tsx": "latest",
+    "typescript": "latest",
+    "vitest": "latest"
+  }
+}

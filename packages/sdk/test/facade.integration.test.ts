@@ -6,6 +6,7 @@ import { wrapFetchWithPayment } from "@x402/fetch";
 import type { AddressInfo } from "node:net";
 import { ConfidentialSvmClientScheme, PolicyViolation, ReceiptSigner, SottoClient, SottoServer, ZCASH_TESTNET, ZcashSettlerClient } from "../src/index.js";
 import { haveLocalValidator, RPC_URL, setupConfidentialMint } from "./helpers/solana.js";
+import { privateKeyToAccount } from "viem/accounts";
 
 const NETWORK = "solana:localnet";
 const PAYEE_UA = "utest1payee";
@@ -99,4 +100,27 @@ describe.skipIf(!haveLocalValidator)("SottoServer + SottoClient (local validator
       http.close();
     }
   }, 240_000);
+});
+
+describe.skipIf(!process.env.TEMPO_TEST_PK)("SottoServer + SottoClient on Tempo Moderato (live)", () => {
+  it("pays a pathUSD challenge within policy and records a public (non-confidential) receipt", async () => {
+    const agentAccount = privateKeyToAccount(process.env.TEMPO_TEST_PK as `0x${string}`);
+    const payee = privateKeyToAccount(("0x" + "22".repeat(32)) as `0x${string}`);
+    const server = SottoServer.create({ secretKey: "test-secret-key-at-least-32-bytes-long-0000", tempo: { recipient: payee.address, testnet: true } });
+    const app = express();
+    app.use(server.protect({ "GET /premium": { price: "$0.01" } }));
+    app.get("/premium", (_q, s) => { s.json({ data: "tempo data" }); });
+    const http = app.listen(0, "127.0.0.1"); await new Promise<void>(r => http.once("listening", r));
+    const base = `http://127.0.0.1:${(http.address() as AddressInfo).port}`;
+    try {
+      const agent = await SottoClient.create({ agentId: "agent-t", policy: { agentId: "agent-t", maxPerPayment: 50_000n }, tempo: { account: agentAccount, expectedChainId: 42431 } });
+      const res = await agent.fetch(`${base}/premium`);
+      expect(res.status).toBe(200);
+      const [r] = await agent.listReceipts();
+      expect(r).toMatchObject({ scheme: "tempo", amount: "10000", confidential: false, network: "eip155:42431" });
+      expect(r!.transactions[0]).toMatch(/^0x[0-9a-f]{64}$/);
+      const cheap = await SottoClient.create({ agentId: "agent-t2", policy: { agentId: "agent-t2", maxPerPayment: 5_000n }, tempo: { account: agentAccount, expectedChainId: 42431 } });
+      await expect(cheap.fetch(`${base}/premium`)).rejects.toBeInstanceOf(PolicyViolation);
+    } finally { http.close(); }
+  }, 120_000);
 });
