@@ -1,7 +1,7 @@
 {
   "name": "@sotto/sdk",
   "version": "0.0.1",
-  "description": "Confidential, budgeted payments for AI agents — x402 and MPP compatible.",
+  "description": "Confidential, budgeted payments for AI agents \u2014 x402 and MPP compatible.",
   "license": "Apache-2.0",
   "type": "module",
   "main": "./dist/index.js",
@@ -21,30 +21,30 @@
     "spike:solana": "tsx scripts/spike-solana-ct.ts"
   },
   "dependencies": {
-    "@solana-program/compute-budget": "latest",
-    "@solana-program/memo": "latest",
-    "@solana-program/system": "latest",
-    "@solana-program/token-2022": "latest",
-    "@solana/kit": "latest",
+    "@solana-program/compute-budget": "^0.18.1",
+    "@solana-program/memo": "^0.14.0",
+    "@solana-program/system": "^0.14.1",
+    "@solana-program/token-2022": "^0.17.0",
+    "@solana/kit": "^8.3.0",
     "@solana/kit-plugin-rpc": "^0.19.0",
     "@solana/kit-plugin-signer": "^0.19.0",
-    "@solana/zk-sdk": "latest",
-    "@x402/core": "latest",
-    "@x402/evm": "latest",
-    "@x402/express": "latest",
+    "@solana/zk-sdk": "^0.5.2",
+    "@x402/core": "^2.25.0",
+    "@x402/evm": "^2.25.0",
+    "@x402/express": "^2.25.0",
     "@x402/extensions": "^2.25.0",
-    "@x402/fetch": "latest",
-    "@x402/svm": "latest",
+    "@x402/fetch": "^2.25.0",
+    "@x402/svm": "^2.25.0",
     "express": "^5.2.1",
-    "mppx": "latest",
-    "viem": "latest",
-    "zod": "latest"
+    "mppx": "^0.9.3",
+    "viem": "^2.56.5",
+    "zod": "^4.6.5"
   },
   "devDependencies": {
     "@types/express": "^5.0.6",
-    "@types/node": "latest",
-    "tsx": "latest",
-    "typescript": "latest",
-    "vitest": "latest"
+    "@types/node": "^26.5.1",
+    "tsx": "^4.23.13",
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.1"
   }
 }

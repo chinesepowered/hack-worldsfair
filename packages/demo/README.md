@@ -1,15 +1,26 @@
 # sotto demo
 
-A paywalled API, a scripted agent, and a dashboard with three viewpoints. Runs against a local validator
-(recipe in the repo README) or devnet.
+One command from nothing to a running demo:
 
 ```bash
-SOLANA_PAYER_KEYFILE=agent.json SOLANA_PAYEE_KEYFILE=api.json pnpm setup:solana   # writes demo-solana.json (contains the auditor secret — never commit)
-SOLANA_PAYEE_KEYFILE=api.json pnpm server                                          # API + dashboard on :4020
-SOLANA_PAYER_KEYFILE=agent.json BUDGET_USD=1 pnpm agent                            # buys $0.25 quotes until denied
+./demo.sh            # validator → keys → confidential mint → API + dashboard → Capy, the agent
+./demo.sh mcp        # Claude Code config so Claude pays through sotto too
+./demo.sh stop       # or: reset
 ```
 
-Optional rails for the server: `ZCASH_SETTLER_URL` + `ZCASH_ADDRESS` (+ `ZEC_PRICE_USD`), `TEMPO_RECIPIENT`.
+Needs `pnpm` and the Solana CLI (`sh -c "$(curl -sSfL https://release.anza.xyz/stable/install)"`). State lives in
+`~/.sotto-demo` (keys, ledger, logs); the repo only gets the gitignored `demo-solana.json` and `receipts.jsonl`.
 
-Routes: `GET /premium/quote` ($0.25), `GET /premium/report` ($1.00). Dashboard: `/`. JSON: `/api/observer`,
-`/api/owner`, `/api/auditor?transfer=&paymentId=`, `/api/rails`.
+Then open **http://127.0.0.1:4020**:
+
+- **Public** column: every transaction, amounts redacted, public balance 0.
+- **Owner** column: Capy's signed receipts as they happen (a $0.25 quote every 5 s).
+- **Auditor** column: click *decrypt* — the exact amount comes back from the ledger.
+- **Policy** rail: the budget meter fills to $1.50/day, then the feed shows *denied*. **Pause spending** refuses
+  everything before it is signed; **Resume** lets it continue.
+
+Routes: `GET /premium/quote` ($0.25), `GET /premium/report` ($1.00). JSON: `/api/observer`, `/api/owner`,
+`/api/auditor?transfer=&paymentId=`, `/api/agent/status`, `/api/rails`.
+
+Optional rails for the API server: `ZCASH_SETTLER_URL` + `ZCASH_ADDRESS` (+ `ZEC_PRICE_USD`), `TEMPO_RECIPIENT`.
+Manual pieces, if you prefer them to the script: `pnpm setup:solana`, `pnpm server`, `LOOP=1 pnpm agent`.

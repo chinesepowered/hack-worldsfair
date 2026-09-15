@@ -14,7 +14,7 @@ import { createServer } from "node:http";
 
 const cfg = JSON.parse(readFileSync(new URL("../demo-solana.json", import.meta.url), "utf8")) as { rpcUrl: string; network: string; mint: string; decimals: number };
 const base = process.env.DEMO_URL ?? "http://127.0.0.1:4020";
-const AGENT_ID = "quote-bot";
+const AGENT_ID = "capy"; // the sotto capybara: buys what it needs, never more, never loudly
 const client = await createClient().use(signerFromFile(process.env.SOLANA_PAYER_KEYFILE!)).use(solanaRpc({ rpcUrl: cfg.rpcUrl }));
 const agent = await SottoClient.create({
   agentId: AGENT_ID,

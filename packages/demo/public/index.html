@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>sotto · who can see what</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 140 92'%3E%3Crect x='8' y='74' width='124' height='12' rx='2' fill='%23b23a26'/%3E%3Cellipse cx='60' cy='52' rx='42' ry='24' fill='%2315201b'/%3E%3Crect x='82' y='20' width='46' height='42' rx='15' fill='%2315201b'/%3E%3Crect x='104' y='36' width='28' height='26' rx='11' fill='%2315201b'/%3E%3Ccircle cx='95' cy='22' r='6.5' fill='%2315201b'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
 <style>
@@ -61,7 +62,7 @@
 <body>
 <div class="wrap">
   <header>
-    <div><div class="brand">sotto</div><div class="tag">Who can see what — one agent, one paid API, three viewpoints. Live.</div></div>
+    <div style="display:flex;align-items:center;gap:14px"><span style="color:var(--ink)"><svg class="capy" viewBox="0 0 140 92" width="58" height="38" aria-hidden="true"><rect x="8" y="74" width="124" height="12" rx="2" fill="var(--accent)"/><ellipse cx="60" cy="52" rx="42" ry="24" fill="currentColor"/><rect x="82" y="20" width="46" height="42" rx="15" fill="currentColor"/><rect x="104" y="36" width="28" height="26" rx="11" fill="currentColor"/><circle cx="95" cy="22" r="6.5" fill="currentColor"/><path d="M104 35 q4.5 3.5 9 0" stroke="var(--paper)" stroke-width="2.2" fill="none" stroke-linecap="round"/><circle cx="125" cy="46" r="1.9" fill="var(--paper)"/><rect x="30" y="64" width="16" height="12" rx="5" fill="currentColor"/><rect x="68" y="64" width="16" height="12" rx="5" fill="currentColor"/></svg></span><div><div class="brand">sotto</div><div class="tag">Who can see what — one agent (Capy), one paid API, three viewpoints. Live.</div></div></div>
     <div class="chips" id="rails"><span class="chip">connecting…</span></div>
   </header>
 
@@ -94,7 +95,7 @@
   <section class="policy">
     <div>
       <div class="who" style="font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)">the owner's policy</div>
-      <h2 style="font-family:var(--display);font-weight:700;font-size:17px;margin:0">quote-bot · <span id="p-state" class="ok">running</span></h2>
+      <h2 style="font-family:var(--display);font-weight:700;font-size:17px;margin:0">capy · <span id="p-state" class="ok">running</span></h2>
       <div style="font-family:var(--mono);font-size:12px;color:var(--ink-2);margin-top:6px" id="p-caps">cap — / payment · — / day</div>
       <div class="meter"><i id="p-meter"></i></div>
       <div style="font-family:var(--mono);font-size:12px" id="p-spent">spent — of —</div>
@@ -140,7 +141,7 @@ async function tick(){
       $('btn-pause').disabled=a.paused; $('btn-resume').disabled=!a.paused;
       $('s-denied').textContent=a.events.filter(e=>e.kind==='denied').length;
       $('feed').innerHTML=a.events.length?a.events.map(e=>`<div><span class="dim">${e.at.slice(11,19)}</span><span class="k ${e.kind}">${e.kind}</span><span>${e.text}${e.tx?' · '+txLink(e.tx):''}</span></div>`).join(''):'<div class="empty">no activity yet</div>';
-    }catch{ $('p-state').textContent='not running'; $('p-state').className='dim'; $('feed').innerHTML='<div class="empty">start the agent with LOOP=1 pnpm agent</div>'; }
+    }catch{ $('p-state').textContent='not running'; $('p-state').className='dim'; $('feed').innerHTML='<div class="empty">start Capy with LOOP=1 pnpm agent</div>'; }
   }catch(e){console.error(e)}
 }
 async function audit(tx,paymentId,btn){ btn.disabled=true; btn.textContent='decrypting…'; try{ const r=await j(`/api/auditor?transfer=${tx}&paymentId=${encodeURIComponent(paymentId)}`); audited[paymentId]={ok:true,usd:r.usd}; }catch(e){ audited[paymentId]={ok:false,error:e.error||'failed'}; } tick(); }

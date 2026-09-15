@@ -12,18 +12,18 @@
     "setup:solana": "tsx src/setup-solana.ts"
   },
   "dependencies": {
-    "@solana-program/token-2022": "latest",
-    "@solana/kit": "latest",
-    "@solana/kit-plugin-rpc": "latest",
-    "@solana/kit-plugin-signer": "latest",
+    "@solana-program/token-2022": "^0.17.0",
+    "@solana/kit": "^8.3.0",
+    "@solana/kit-plugin-rpc": "^0.19.0",
+    "@solana/kit-plugin-signer": "^0.19.0",
     "@sotto/sdk": "workspace:*",
-    "express": "latest",
-    "viem": "latest"
+    "express": "^5.2.1",
+    "viem": "^2.56.5"
   },
   "devDependencies": {
-    "@types/express": "latest",
-    "@types/node": "latest",
-    "tsx": "latest",
-    "typescript": "latest"
+    "@types/express": "^5.0.6",
+    "@types/node": "^26.5.1",
+    "tsx": "^4.23.13",
+    "typescript": "^7.0.2"
   }
 }

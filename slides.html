@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>sotto</title>
 <meta name="description" content="Four slides: confidential, budgeted, auditable payments for AI agents.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 140 92'%3E%3Crect x='8' y='74' width='124' height='12' rx='2' fill='%23b23a26'/%3E%3Cellipse cx='60' cy='52' rx='42' ry='24' fill='%2315201b'/%3E%3Crect x='82' y='20' width='46' height='42' rx='15' fill='%2315201b'/%3E%3Crect x='104' y='36' width='28' height='26' rx='11' fill='%2315201b'/%3E%3Ccircle cx='95' cy='22' r='6.5' fill='%2315201b'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
 <style>
@@ -64,7 +65,8 @@
   .rail p{font-size:.88em;color:var(--ink-2)}
   .rail .how{font-family:var(--mono);font-size:.74em;color:var(--ink-3);margin-top:.5em}
   .foot{display:flex;justify-content:space-between;align-items:end;gap:1em;font-family:var(--mono);font-size:.74em;color:var(--ink-3);border-top:1px solid var(--rule);padding-top:.7em;padding-right:150px}
-  .foot .brand{font-family:var(--display);font-weight:800;color:var(--ink);font-size:1.15em;letter-spacing:-.02em}
+  .foot .brand{font-family:var(--display);font-weight:800;color:var(--ink);font-size:1.15em;letter-spacing:-.02em;display:inline-flex;align-items:center;gap:.5em}
+  .foot .brand .capy{width:34px;height:22px}
   .stamp{display:inline-block;transform:rotate(-3deg);transform-origin:left center;border:2px solid var(--accent);color:var(--accent);font-family:var(--mono);font-weight:600;letter-spacing:.16em;text-transform:uppercase;padding:.3em .7em;font-size:clamp(11px,.85vw,14px);border-radius:3px;margin:.6em 0 0 .2em}
   nav{position:fixed;right:max(16px,env(safe-area-inset-right,0px));bottom:max(16px,env(safe-area-inset-bottom,0px));display:flex;gap:.4em;align-items:center;font-family:var(--mono);font-size:12px;color:var(--ink-3)}
   nav button{background:var(--paper-2);border:1px solid var(--rule);color:var(--ink);border-radius:3px;width:34px;height:30px;cursor:pointer;font-family:var(--mono)}
@@ -87,9 +89,12 @@
 <div class="deck" id="deck">
 
   <section class="slide on" data-n="1">
-    <header>
-      <div class="eyebrow">1 / 4 · <b>the problem</b></div>
-      <h1>Every agent payment is a public confession.</h1>
+    <header style="display:grid;grid-template-columns:1fr auto;align-items:start;gap:16px">
+      <div>
+        <div class="eyebrow">1 / 4 · <b>the problem</b></div>
+        <h1>Every agent payment is a public confession.</h1>
+      </div>
+      <div style="color:var(--ink);padding-top:.4em"><svg class="capy" viewBox="0 0 140 92" width="150" height="99" aria-hidden="true"><rect x="8" y="74" width="124" height="12" rx="2" fill="var(--accent)"/><ellipse cx="60" cy="52" rx="42" ry="24" fill="currentColor"/><rect x="82" y="20" width="46" height="42" rx="15" fill="currentColor"/><rect x="104" y="36" width="28" height="26" rx="11" fill="currentColor"/><circle cx="95" cy="22" r="6.5" fill="currentColor"/><path d="M104 35 q4.5 3.5 9 0" stroke="var(--paper)" stroke-width="2.2" fill="none" stroke-linecap="round"/><circle cx="125" cy="46" r="1.9" fill="var(--paper)"/><rect x="30" y="64" width="16" height="12" rx="5" fill="currentColor"/><rect x="68" y="64" width="16" height="12" rx="5" fill="currentColor"/></svg></div>
     </header>
     <div class="body">
       <p class="lede">A trading agent buys market data every few minutes. Point any explorer at its wallet and its strategy writes itself — which feeds, how often, at what price. And nothing bounds it: one bug or one bad prompt spends the whole wallet.</p>
@@ -107,7 +112,7 @@
       </div>
       <div class="strip"><span class="chip">x402 · exact</span><span class="chip">plain SPL / ERC-20 transfer</span><span class="dim">→ the competitor's dashboard, written by the chain.</span></div>
     </div>
-    <footer class="foot"><span class="brand">sotto</span><span>Crypto World's Fair · Sep 2026</span></footer>
+    <footer class="foot"><span class="brand"><svg class="capy" viewBox="0 0 140 92" width="34" height="22" aria-hidden="true"><rect x="8" y="74" width="124" height="12" rx="2" fill="var(--accent)"/><ellipse cx="60" cy="52" rx="42" ry="24" fill="currentColor"/><rect x="82" y="20" width="46" height="42" rx="15" fill="currentColor"/><rect x="104" y="36" width="28" height="26" rx="11" fill="currentColor"/><circle cx="95" cy="22" r="6.5" fill="currentColor"/><path d="M104 35 q4.5 3.5 9 0" stroke="var(--paper)" stroke-width="2.2" fill="none" stroke-linecap="round"/><circle cx="125" cy="46" r="1.9" fill="var(--paper)"/><rect x="30" y="64" width="16" height="12" rx="5" fill="currentColor"/><rect x="68" y="64" width="16" height="12" rx="5" fill="currentColor"/></svg>sotto</span><span>Crypto World's Fair · Sep 2026</span></footer>
   </section>
 
   <section class="slide" data-n="2">
@@ -128,7 +133,7 @@
         <span class="chip">cap $0.50 / payment</span><span class="chip">$10 / day</span><span class="chip">allow *.marketdata.io</span><span class="chip accent">pause</span>
       </div>
     </div>
-    <footer class="foot"><span class="brand">sotto</span><span>x402 schemes <code>confidential</code> + <code>shielded</code> · MPP methods · MCP server</span></footer>
+    <footer class="foot"><span class="brand"><svg class="capy" viewBox="0 0 140 92" width="34" height="22" aria-hidden="true"><rect x="8" y="74" width="124" height="12" rx="2" fill="var(--accent)"/><ellipse cx="60" cy="52" rx="42" ry="24" fill="currentColor"/><rect x="82" y="20" width="46" height="42" rx="15" fill="currentColor"/><rect x="104" y="36" width="28" height="26" rx="11" fill="currentColor"/><circle cx="95" cy="22" r="6.5" fill="currentColor"/><path d="M104 35 q4.5 3.5 9 0" stroke="var(--paper)" stroke-width="2.2" fill="none" stroke-linecap="round"/><circle cx="125" cy="46" r="1.9" fill="var(--paper)"/><rect x="30" y="64" width="16" height="12" rx="5" fill="currentColor"/><rect x="68" y="64" width="16" height="12" rx="5" fill="currentColor"/></svg>sotto</span><span>x402 schemes <code>confidential</code> + <code>shielded</code> · MPP methods · MCP server</span></footer>
   </section>
 
   <section class="slide" data-n="3">
@@ -150,7 +155,7 @@
       </div>
       <div class="strip"><span class="dim">one 402, two headers:</span><span class="chip">PAYMENT-REQUIRED</span><span class="chip">WWW-Authenticate: Payment</span><span class="dim">— x402 agents and MPP agents both proceed.</span></div>
     </div>
-    <footer class="foot"><span class="brand">sotto</span><span>Apache-2.0 · github.com/chinesepowered/hack-worldsfair</span></footer>
+    <footer class="foot"><span class="brand"><svg class="capy" viewBox="0 0 140 92" width="34" height="22" aria-hidden="true"><rect x="8" y="74" width="124" height="12" rx="2" fill="var(--accent)"/><ellipse cx="60" cy="52" rx="42" ry="24" fill="currentColor"/><rect x="82" y="20" width="46" height="42" rx="15" fill="currentColor"/><rect x="104" y="36" width="28" height="26" rx="11" fill="currentColor"/><circle cx="95" cy="22" r="6.5" fill="currentColor"/><path d="M104 35 q4.5 3.5 9 0" stroke="var(--paper)" stroke-width="2.2" fill="none" stroke-linecap="round"/><circle cx="125" cy="46" r="1.9" fill="var(--paper)"/><rect x="30" y="64" width="16" height="12" rx="5" fill="currentColor"/><rect x="68" y="64" width="16" height="12" rx="5" fill="currentColor"/></svg>sotto</span><span>Apache-2.0 · github.com/chinesepowered/hack-worldsfair</span></footer>
   </section>
 
   <section class="slide" data-n="4">
@@ -170,7 +175,7 @@
         <div class="strip" style="margin-top:1em"><span class="chip">Solana track</span><span class="chip">Zcash track</span><span class="chip">Tempo track</span><span class="chip">x402 / Base compatible</span></div>
       </div>
     </div>
-    <footer class="foot"><span class="brand">sotto</span><span>confidential · bounded · auditable</span></footer>
+    <footer class="foot"><span class="brand"><svg class="capy" viewBox="0 0 140 92" width="34" height="22" aria-hidden="true"><rect x="8" y="74" width="124" height="12" rx="2" fill="var(--accent)"/><ellipse cx="60" cy="52" rx="42" ry="24" fill="currentColor"/><rect x="82" y="20" width="46" height="42" rx="15" fill="currentColor"/><rect x="104" y="36" width="28" height="26" rx="11" fill="currentColor"/><circle cx="95" cy="22" r="6.5" fill="currentColor"/><path d="M104 35 q4.5 3.5 9 0" stroke="var(--paper)" stroke-width="2.2" fill="none" stroke-linecap="round"/><circle cx="125" cy="46" r="1.9" fill="var(--paper)"/><rect x="30" y="64" width="16" height="12" rx="5" fill="currentColor"/><rect x="68" y="64" width="16" height="12" rx="5" fill="currentColor"/></svg>sotto</span><span>confidential · bounded · auditable</span></footer>
   </section>
 
 </div>

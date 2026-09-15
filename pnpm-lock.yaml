@@ -11,99 +11,99 @@ importers:
   packages/demo:
     dependencies:
       '@solana-program/token-2022':
-        specifier: latest
+        specifier: ^0.17.0
         version: 0.17.0(@solana/kit@8.3.0(typescript@7.0.2))(@solana/sysvars@8.3.0(typescript@7.0.2))(@solana/zk-sdk@0.5.2)
       '@solana/kit':
-        specifier: latest
+        specifier: ^8.3.0
         version: 8.3.0(typescript@7.0.2)
       '@solana/kit-plugin-rpc':
-        specifier: latest
+        specifier: ^0.19.0
         version: 0.19.0(@solana/kit@8.3.0(typescript@7.0.2))
       '@solana/kit-plugin-signer':
-        specifier: latest
+        specifier: ^0.19.0
         version: 0.19.0(@solana/kit@8.3.0(typescript@7.0.2))
       '@sotto/sdk':
         specifier: workspace:*
         version: link:../sdk
       express:
-        specifier: latest
+        specifier: ^5.2.1
         version: 5.2.1
       viem:
-        specifier: latest
+        specifier: ^2.56.5
         version: 2.56.5(typescript@7.0.2)(zod@4.6.5)
     devDependencies:
       '@types/express':
-        specifier: latest
+        specifier: ^5.0.6
         version: 5.0.6
       '@types/node':
-        specifier: latest
+        specifier: ^26.5.1
         version: 26.5.1
       tsx:
-        specifier: latest
+        specifier: ^4.23.13
         version: 4.23.13
       typescript:
-        specifier: latest
+        specifier: ^7.0.2
         version: 7.0.2
 
   packages/mcp-server:
     dependencies:
       '@modelcontextprotocol/sdk':
-        specifier: latest
+        specifier: ^1.30.0
         version: 1.30.0(zod@4.6.5)
       '@solana/kit':
-        specifier: latest
+        specifier: ^8.3.0
         version: 8.3.0(typescript@7.0.2)
       '@solana/kit-plugin-rpc':
-        specifier: latest
+        specifier: ^0.19.0
         version: 0.19.0(@solana/kit@8.3.0(typescript@7.0.2))
       '@solana/kit-plugin-signer':
-        specifier: latest
+        specifier: ^0.19.0
         version: 0.19.0(@solana/kit@8.3.0(typescript@7.0.2))
       '@sotto/sdk':
         specifier: workspace:*
         version: link:../sdk
       viem:
-        specifier: latest
+        specifier: ^2.56.5
         version: 2.56.5(typescript@7.0.2)(zod@4.6.5)
       zod:
-        specifier: latest
+        specifier: ^4.6.5
         version: 4.6.5
     devDependencies:
       '@types/express':
-        specifier: latest
+        specifier: ^5.0.6
         version: 5.0.6
       '@types/node':
-        specifier: latest
+        specifier: ^26.5.1
         version: 26.5.1
       express:
-        specifier: latest
+        specifier: ^5.2.1
         version: 5.2.1
       tsx:
-        specifier: latest
+        specifier: ^4.23.13
         version: 4.23.13
       typescript:
-        specifier: latest
+        specifier: ^7.0.2
         version: 7.0.2
       vitest:
-        specifier: latest
+        specifier: ^5.0.1
         version: 5.0.1(@types/node@26.5.1)(vite@8.3.0(@types/node@26.5.1)(esbuild@0.28.2)(tsx@4.23.13))
 
   packages/sdk:
     dependencies:
       '@solana-program/compute-budget':
-        specifier: latest
+        specifier: ^0.18.1
         version: 0.18.1(@solana/kit@8.3.0(typescript@7.0.2))
       '@solana-program/memo':
-        specifier: latest
-        version: 0.13.1(@solana/kit@8.3.0(typescript@7.0.2))
+        specifier: ^0.14.0
+        version: 0.14.0(@solana/kit@8.3.0(typescript@7.0.2))
       '@solana-program/system':
-        specifier: latest
+        specifier: ^0.14.1
         version: 0.14.1(@solana/kit@8.3.0(typescript@7.0.2))
       '@solana-program/token-2022':
-        specifier: latest
+        specifier: ^0.17.0
         version: 0.17.0(@solana/kit@8.3.0(typescript@7.0.2))(@solana/sysvars@8.3.0(typescript@7.0.2))(@solana/zk-sdk@0.5.2)
       '@solana/kit':
-        specifier: latest
+        specifier: ^8.3.0
         version: 8.3.0(typescript@7.0.2)
       '@solana/kit-plugin-rpc':
         specifier: ^0.19.0
@@ -112,53 +112,53 @@ importers:
         specifier: ^0.19.0
         version: 0.19.0(@solana/kit@8.3.0(typescript@7.0.2))
       '@solana/zk-sdk':
-        specifier: latest
+        specifier: ^0.5.2
         version: 0.5.2
       '@x402/core':
-        specifier: latest
+        specifier: ^2.25.0
         version: 2.25.0
       '@x402/evm':
-        specifier: latest
+        specifier: ^2.25.0
         version: 2.25.0(typescript@7.0.2)
       '@x402/express':
-        specifier: latest
+        specifier: ^2.25.0
         version: 2.25.0(express@5.2.1)(typescript@7.0.2)
       '@x402/extensions':
         specifier: ^2.25.0
         version: 2.25.0(typescript@7.0.2)
       '@x402/fetch':
-        specifier: latest
+        specifier: ^2.25.0
         version: 2.25.0
       '@x402/svm':
-        specifier: latest
+        specifier: ^2.25.0
         version: 2.25.0(@solana/kit@8.3.0(typescript@7.0.2))
       express:
         specifier: ^5.2.1
         version: 5.2.1
       mppx:
-        specifier: latest
+        specifier: ^0.9.3
         version: 0.9.3(@modelcontextprotocol/sdk@1.30.0(zod@4.6.5))(@x402/core@2.25.0)(@x402/express@2.25.0(express@5.2.1)(typescript@7.0.2))(express@5.2.1)(hono@4.13.8)(typescript@7.0.2)(viem@2.56.5(typescript@7.0.2)(zod@4.6.5))
       viem:
-        specifier: latest
+        specifier: ^2.56.5
         version: 2.56.5(typescript@7.0.2)(zod@4.6.5)
       zod:
-        specifier: latest
+        specifier: ^4.6.5
         version: 4.6.5
     devDependencies:
       '@types/express':
         specifier: ^5.0.6
         version: 5.0.6
       '@types/node':
-        specifier: latest
+        specifier: ^26.5.1
         version: 26.5.1
       tsx:
-        specifier: latest
+        specifier: ^4.23.13
         version: 4.23.13
       typescript:
-        specifier: latest
+        specifier: ^7.0.2
         version: 7.0.2
       vitest:
-        specifier: latest
+        specifier: ^5.0.1
         version: 5.0.1(@types/node@26.5.1)(vite@8.3.0(@types/node@26.5.1)(esbuild@0.28.2)(tsx@4.23.13))
 
 packages:
@@ -507,8 +507,8 @@ packages:
     peerDependencies:
       '@solana/kit': ^8.0.0
 
-  '@solana-program/memo@0.13.1':
-    resolution: {integrity: sha512-c0J4nNSTbGjRlVfn81mavBQvBy22Gad6cKSJw+x2pqBtNiBLL60W+wWuxhHfQeb+v1nETvtupgIrDrrWrlqXcw==}
+  '@solana-program/memo@0.14.0':
+    resolution: {integrity: sha512-JRU6RL8A+cUkvUH7jct6aMhzBDoHxLInNPQIDa7Aq20Tw9nHSNbNKfNndlm0SXkv4Bw0H50OL9jgdrJiHMoO5g==}
     peerDependencies:
       '@solana/kit': ^8.0.0
 
@@ -2142,7 +2142,7 @@ snapshots:
     dependencies:
       '@solana/kit': 8.3.0(typescript@7.0.2)
 
-  '@solana-program/memo@0.13.1(@solana/kit@8.3.0(typescript@7.0.2))':
+  '@solana-program/memo@0.14.0(@solana/kit@8.3.0(typescript@7.0.2))':
     dependencies:
       '@solana/kit': 8.3.0(typescript@7.0.2)
 

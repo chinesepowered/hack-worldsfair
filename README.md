@@ -1,4 +1,10 @@
-<p align="center"><img src="docs/img/logo.svg" width="300" alt="sotto"></p>
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/img/capy-dark.svg">
+    <img src="docs/img/capy.svg" width="220" alt="Capy, the sotto capybara, resting on a redacted ledger row">
+  </picture>
+</p>
+<h1 align="center">sotto</h1>
 
 <h3 align="center">Confidential, budgeted, auditable payments for AI agents.</h3>
 
@@ -43,7 +49,7 @@ Any MCP client gets it through `sotto-mcp-server` with one line of config.
 | Zcash | settler syncs against `testnet.zec.rocks`; both protocol faces pass; live send pending testnet funds |
 | Tests | 20 integration tests green: local Solana validator, live Tempo, fake and live Zcash settlers, MCP over stdio |
 
-**The 4-slide pitch:** [`slides.html`](slides.html) · **Scripts:** [`docs/pitch.md`](docs/pitch.md), [`docs/demo-script.md`](docs/demo-script.md) · **Design:** [`docs/architecture.md`](docs/architecture.md)
+**Meet Capy** — the demo agent: a capybara that buys exactly what it needs, never more, never loudly. **The 4-slide pitch:** [`slides.html`](slides.html) · **Scripts:** [`docs/pitch.md`](docs/pitch.md), [`docs/demo-script.md`](docs/demo-script.md) · **Design:** [`docs/architecture.md`](docs/architecture.md)
 
 <p align="center"><img src="docs/img/slide-2.png" width="920" alt="Slide 2: sotto — paid quietly, proven loudly"></p>
 
