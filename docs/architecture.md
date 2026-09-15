@@ -58,6 +58,24 @@ never want those keys off the agent's machine. So `confidential` and `shielded` 
 | `tempo-tip20` | MPP `tempo` charge (TIP-20 `transferWithMemo`, memo = id) | `TransferWithMemo` event match | no (public), but bounded + receipted | Tempo |
 | `evm-exact` | x402 `exact` (EIP-3009) via `@x402/evm` | facilitator verify/settle | no | Base, + free EVM deploys |
 
+## Solana `confidential` scheme — verified design (spike 2026-09-15)
+
+A record-backed confidential transfer lands as 5 transactions. Two matter to the verifier:
+- **proof tx** — `zk-elgamal-proof: VerifyBatchedGroupedCiphertext3HandlesValidity` (545 bytes) written into a
+  context-state account. Its context holds the grouped ciphertexts `lo`/`hi` encrypted to
+  (source, destination, auditor).
+- **transfer tx** — `token-2022 ConfidentialTransfer` (disc 27/7) referencing that context account, plus the
+  **Memo** carrying the x402 `payment-identifier` id, in the same transaction.
+
+Payer submits `{ transferSignature, proofSignatures[], paymentId }`. Payee verifies statelessly:
+1. transfer tx succeeded; contains a ConfidentialTransfer whose destination is *my* token account and a
+   Memo equal to `paymentId`;
+2. the validity-proof tx creates/verifies the exact context account the transfer references;
+3. `second_pubkey` in the proof context equals my ElGamal pubkey; decrypt `lo + (hi << 16)` with my
+   secret at index 1 → amount ≥ required.
+An auditor does step 3 with the mint's auditor key at index 2. The public can do none of it.
+Measured: decryption ≈ 0.8 s in Node (WASM discrete-log lookup); the whole flow < 5 s on a local validator.
+
 ## Policy engine (bounded spending)
 
 Local, in the client SDK, enforced before any signature is produced: per-agent budget per period,

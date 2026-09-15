@@ -163,3 +163,13 @@ const pubA = await fetchToken(rpc, A.token);
 const pubB = await fetchToken(rpc, B.token);
 console.log(`  public view: alice.amount=${pubA.data.amount} bob.amount=${pubB.data.amount} (confidential balances are ciphertext)`);
 console.log(bobBal.availableBalance === PAY_AMOUNT ? "PASS: payee decrypted exactly the paid amount" : "FAIL: amount mismatch");
+if (process.env.SPIKE_ARTIFACT) {
+  const { writeFileSync } = await import("node:fs");
+  writeFileSync(process.env.SPIKE_ARTIFACT, JSON.stringify({
+    rpcUrl: RPC_URL, mint, paymentId, amount: PAY_AMOUNT.toString(), signatures: sigs,
+    aliceToken: A.token, bobToken: B.token,
+    bobElGamalSecret: Array.from(B.elgamalSecretKey.toBytes()),
+    auditorElGamalSecret: Array.from(auditor.secretKey),
+  }, null, 2));
+  console.log("artifact written to", process.env.SPIKE_ARTIFACT);
+}
