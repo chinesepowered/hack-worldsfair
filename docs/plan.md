@@ -17,8 +17,8 @@ Deadline: **Oct 12, 2026, 11:59pm PT**. Last five days are reserved for videos +
 - [~] Backend: Zcash shielded — `services/zcash-settler serve` works (/health /address /balance /sync /send /received); TS rail + x402/MPP adapters in progress; end-to-end blocked on testnet funds (faucets down/queued)
 - [x] Backend: Tempo via mppx `tempo` method, policy-gated in `SottoClient`; live facade test on Moderato
 - [x] `packages/mcp-server`: `sotto_fetch`, `sotto_budget`, `sotto_receipts`, `sotto_decisions`, `sotto_set_paused` over stdio; driven end to end by the MCP client SDK in a test
-- [ ] `packages/demo`: paywalled API + agent + observer/owner/auditor views (the demo path)
-- [ ] README per chain, written for that ecosystem's developers; live tx links on each chain
+- [x] `packages/demo`: `setup:solana`, paywalled API + dashboard (observer / owner / auditor with on-chain proof discovery), scripted agent; runs end to end on the local validator
+- [~] README: root + sdk + mcp-server + demo + settler `serve` docs done; per-chain developer sections and live tx links still to add (devnet/testnet deployments)
 - [ ] License, CI, tests for the policy engine and each backend's happy path
 
 ## Phase 2 — stretch (only after Phase 1 is green)
@@ -28,14 +28,16 @@ Deadline: **Oct 12, 2026, 11:59pm PT**. Last five days are reserved for videos +
 - [ ] Real usage: publish MCP server, post in x402/MCP communities, collect transactions from strangers
 
 ## Phase 3 — submission (Oct 7–12)
-- [ ] `docs/pitch.md` → 2–3 min pitch video (human)
-- [ ] `docs/demo-script.md` → ≤3 min demo video (human)
+- [~] `docs/pitch.md` written → 2–3 min pitch video (human)
+- [~] `docs/demo-script.md` written → ≤3 min demo video (human)
 - [ ] GTM + demand validation writeup; logo; submission form; all chains listed explicitly
 
 ## Cut without guilt
 Burner wallets · Agent Miles · UI polish beyond the demo path · any fourth chain before three work.
 
 ## Decisions log
+- 2026-09-15 — Auditor verification discovers proof transactions from the proof context account's own signature history; nothing is trusted from the payer.
+- 2026-09-15 — Never `pkill -f <pattern>` from a Claude shell: the pattern matches the calling shell's own command line. Use pidfiles.
 - 2026-09-15 — Solana dev loop runs on a **local test validator** (`solana-test-validator --clone-upgradeable-program` for Token-2022 + SPL Record from devnet); public devnet faucets were dry.
 - 2026-09-15 — token-2022 **0.17** API: `getCreateMintInstructionPlan(client, input)` (async); helpers take `Token` data (`account.data`), not the `Account` wrapper; multi-tx plans go through `client.sendTransactions`.
 - 2026-09-15 — zcash-devtool patched (`with_extra_ca`) to trust `SSL_CERT_FILE`; the sandbox proxy re-terminates TLS. Not needed on a normal machine.

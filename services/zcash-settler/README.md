@@ -95,3 +95,22 @@ Unless you explicitly state otherwise, any contribution intentionally
 submitted for inclusion in the work by you, as defined in the Apache-2.0
 license, shall be dual licensed as above, without any additional terms or
 conditions.
+
+## sotto: `serve`
+
+```bash
+zcash-settler wallet -w <wallet_dir> serve --listen 127.0.0.1:8777 -i <age identity>   # spending wallet (payer)
+zcash-settler wallet -w <viewing_dir> serve --listen 127.0.0.1:8778                     # viewing-key wallet (payee): /send is refused
+```
+
+| Endpoint | Purpose |
+|---|---|
+| `GET /health` | `{ ok, network }` |
+| `GET /address` | the account's default unified address |
+| `GET /balance` | totals and spendable balances after the last sync |
+| `POST /sync` | one sync round against lightwalletd |
+| `POST /send` `{ address, zatoshis, memo }` | shielded payment; the memo carries sotto's payment id |
+| `GET /received?memo=&min_zatoshis=&sync=` | received outputs (memo-filtered); syncs first unless `sync=false` |
+
+All wallet work runs on one worker thread, so requests are serialized. Set `SSL_CERT_FILE` if your egress
+re-terminates TLS (the tool adds it to the bundled roots).
