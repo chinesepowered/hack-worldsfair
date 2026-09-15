@@ -37,6 +37,7 @@
   table{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:12px;font-variant-numeric:tabular-nums}
   th{text-align:left;color:var(--ink-3);font-weight:500;padding:6px 6px;border-bottom:1px solid var(--rule);text-transform:uppercase;letter-spacing:.08em;font-size:10.5px}
   td{padding:7px 6px;border-bottom:1px solid var(--rule);vertical-align:top;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:0}
+  td.fit,th.fit{max-width:none;width:1%;overflow:visible}
   td.amt,th.amt{text-align:right}
   .bar{display:inline-block;background:var(--redact);color:transparent;border-radius:2px;user-select:none}
   .ok{color:var(--good);font-weight:600}.bad{color:var(--bad)}.dim{color:var(--ink-3)}.warn{color:var(--warn)}
@@ -81,12 +82,12 @@
     <div class="pane">
       <div class="who">viewpoint 2</div><h2>Owner — the agent's operator</h2>
       <p class="note">Signed receipts from the agent's private ledger: every payment in full, with the policy decision behind it.</p>
-      <table><thead><tr><th>when</th><th>resource</th><th class="amt">paid</th><th>rail</th></tr></thead><tbody id="own"></tbody></table>
+      <table><thead><tr><th class="fit">when</th><th>resource</th><th class="amt fit">paid</th><th class="fit">rail</th></tr></thead><tbody id="own"></tbody></table>
     </div>
     <div class="pane">
       <div class="who">viewpoint 3</div><h2>Auditor — holds the mint's auditor key</h2>
       <p class="note">Recovers the exact amount from the ledger alone. The proof transactions are discovered on-chain; nothing is trusted from the agent.</p>
-      <table><thead><tr><th>tx</th><th class="amt">decrypted</th><th></th></tr></thead><tbody id="aud"></tbody></table>
+      <table><thead><tr><th>tx</th><th class="amt fit">decrypted</th><th class="fit"></th></tr></thead><tbody id="aud"></tbody></table>
     </div>
   </section>
 
@@ -112,6 +113,7 @@
 <script>
 const $=id=>document.getElementById(id);
 const short=s=>s?s.slice(0,6)+'…'+s.slice(-4):'';
+const railName={'solana-confidential':'Solana · confidential',confidential:'Solana · confidential','zcash-shielded':'Zcash · shielded',shielded:'Zcash · shielded',tempo:'Tempo'};
 let explorerTx=null, audited={};
 const txLink=sig=>explorerTx?`<a href="${explorerTx.replace('{sig}',sig)}" target="_blank" rel="noopener">${short(sig)}</a>`:short(sig);
 async function j(u,o){const r=await fetch(u,o);return r.ok?r.json():Promise.reject(await r.json().catch(()=>({error:r.status})))}
@@ -123,9 +125,9 @@ async function tick(){
     $('obs-acct').textContent=`account ${o.tokenAccount} · public balance ${o.publicBalance}`;
     $('obs').innerHTML=o.transactions.length?o.transactions.map(t=>`<tr><td>${txLink(t.signature)}</td><td>${t.slot}</td><td class="amt"><span class="bar">0.000000</span></td></tr>`).join(''):'<tr><td colspan=3 class="empty">no transactions yet</td></tr>';
     const w=await j('/api/owner');
-    $('own').innerHTML=w.receipts.length?w.receipts.map(r=>`<tr><td>${new Date(r.at).toLocaleTimeString()}</td><td>${new URL(r.resource).pathname}</td><td class="amt ok">${r.details?.usd??r.amount}</td><td>${r.scheme}</td></tr>`).join(''):'<tr><td colspan=4 class="empty">no receipts yet</td></tr>';
+    $('own').innerHTML=w.receipts.length?w.receipts.map(r=>`<tr><td class="fit">${new Date(r.at).toLocaleTimeString()}</td><td>${new URL(r.resource).pathname}</td><td class="amt ok fit">${r.details?.usd??r.amount}</td><td class="fit">${railName[r.scheme]??r.scheme}</td></tr>`).join(''):'<tr><td colspan=4 class="empty">no receipts yet</td></tr>';
     const conf=w.receipts.filter(r=>r.scheme==='solana-confidential'||r.scheme==='confidential').slice(0,8);
-    $('aud').innerHTML=conf.length?conf.map(r=>{const a=audited[r.paymentId];return `<tr><td>${txLink(r.transactions[0])}</td><td class="amt">${a?(a.ok?`<span class="ok">$${a.usd}</span>`:`<span class="bad">${a.error}</span>`):'<span class="bar">0.000000</span>'}</td><td>${a?'<span class="dim">from ledger ✓</span>':`<button onclick="audit('${r.transactions[0]}','${r.paymentId}',this)">decrypt</button>`}</td></tr>`}).join(''):'<tr><td colspan=3 class="empty">no confidential payments yet</td></tr>';
+    $('aud').innerHTML=conf.length?conf.map(r=>{const a=audited[r.paymentId];return `<tr><td>${txLink(r.transactions[0])}</td><td class="amt fit">${a?(a.ok?`<span class="ok">$${a.usd}</span>`:`<span class="bad">${a.error}</span>`):'<span class="bar">0.000000</span>'}</td><td class="fit">${a?'<span class="dim">from ledger ✓</span>':`<button onclick="audit('${r.transactions[0]}','${r.paymentId}',this)">decrypt</button>`}</td></tr>`}).join(''):'<tr><td colspan=3 class="empty">no confidential payments yet</td></tr>';
     $('s-paid').textContent=w.receipts.length;
     const spent=w.receipts.reduce((s,r)=>s+Number((r.details?.usd??'$0').replace('$','')),0); $('s-spent').textContent='$'+spent.toFixed(2);
     try{

@@ -57,9 +57,11 @@ if (process.env.LOOP === "1") {
     res.statusCode = 404; res.end("{}");
   }).listen(port, "127.0.0.1", () => console.log(`agent control on http://127.0.0.1:${port}`));
   const interval = Number(process.env.INTERVAL_MS ?? 4000);
+  const backoff = Number(process.env.BACKOFF_MS ?? 30_000);
   for (;;) {
-    await buyOnce();
-    await new Promise(r => setTimeout(r, interval));
+    const ok = await buyOnce();
+    // a denied or failed purchase is not worth hammering: wait longer before asking again
+    await new Promise(r => setTimeout(r, ok ? interval : backoff));
   }
 } else {
   for (let i = 1; i <= 6; i++) if (!(await buyOnce())) break;
