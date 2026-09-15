@@ -1,0 +1,12 @@
+{
+  "name": "sotto",
+  "private": true,
+  "version": "0.0.1",
+  "description": "Confidential, budgeted payments for AI agents — x402-compatible, with shielded settlement.",
+  "license": "Apache-2.0",
+  "packageManager": "pnpm@10.33.0",
+  "scripts": {
+    "build": "pnpm -r build",
+    "test": "pnpm -r test"
+  }
+}

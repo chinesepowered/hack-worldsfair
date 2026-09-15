@@ -1,0 +1,27 @@
+# secrets — never commit, even testnet
+.env
+.env.*
+!.env.example
+*.key
+*.seed
+*.pem
+**/keys/
+**/wallets/
+**/*.wallet
+**/*.db
+**/*.sqlite*
+
+# build
+node_modules/
+dist/
+build/
+target/
+out/
+cache/
+*.tsbuildinfo
+coverage/
+
+# misc
+.DS_Store
+*.log
+.turbo/
