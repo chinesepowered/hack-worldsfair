@@ -5,7 +5,7 @@
  *   /                        the dashboard: observer / owner / auditor / policy views
  *   /api/...                 JSON for the dashboard
  * Env: SOLANA_PAYEE_KEYFILE (the API's key), ZCASH_SETTLER_URL + ZCASH_ADDRESS (optional), TEMPO_RECIPIENT (optional),
- *      SOTTO_SECRET (MPP secret), PORT, RECEIPTS_FILE (Capy's ledger), AGENTS_DIR (other agents' state dirs: <dir>/<agent>/receipts.jsonl)
+ *      ZCASH_WAIT_MS (how long the payee waits for a shielded payment to be seen; default 90 s), SOTTO_SECRET (MPP secret), PORT, RECEIPTS_FILE (Capy's ledger), AGENTS_DIR (other agents' state dirs: <dir>/<agent>/receipts.jsonl)
  */
 import { findAssociatedTokenPda, TOKEN_2022_PROGRAM_ADDRESS } from "@solana-program/token-2022";
 import { createKeyPairSignerFromBytes, createSolanaRpc, type Address, type Signature } from "@solana/kit";
@@ -22,7 +22,7 @@ const rpc = createSolanaRpc(cfg.rpcUrl);
 const server = SottoServer.create({
   secretKey: process.env.SOTTO_SECRET ?? "demo-secret-key-at-least-32-bytes-long-0000",
   solana: { rpcUrl: cfg.rpcUrl, payee: api, usdMint: { mint: cfg.mint, decimals: cfg.decimals }, network: cfg.network },
-  ...(process.env.ZCASH_SETTLER_URL && process.env.ZCASH_ADDRESS ? { zcash: { settler: new ZcashSettlerClient(process.env.ZCASH_SETTLER_URL), address: process.env.ZCASH_ADDRESS, network: "zcash:testnet", zecPriceUsd: Number(process.env.ZEC_PRICE_USD ?? 40), waitMs: 90_000 } } : {}),
+  ...(process.env.ZCASH_SETTLER_URL && process.env.ZCASH_ADDRESS ? { zcash: { settler: new ZcashSettlerClient(process.env.ZCASH_SETTLER_URL), address: process.env.ZCASH_ADDRESS, network: "zcash:testnet", zecPriceUsd: Number(process.env.ZEC_PRICE_USD ?? 40), waitMs: Number(process.env.ZCASH_WAIT_MS ?? 90_000) } } : {}),
   ...(process.env.TEMPO_RECIPIENT ? { tempo: { recipient: process.env.TEMPO_RECIPIENT as `0x${string}`, testnet: true } } : {}),
 });
 

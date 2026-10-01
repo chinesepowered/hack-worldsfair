@@ -32,6 +32,7 @@ use zcash_protocol::{
 use zip321::{Payment, TransactionRequest};
 
 use super::{
+    enhance,
     send::{self, PaymentContext},
     sync,
 };
@@ -174,6 +175,11 @@ fn do_address(s: &AppState) -> anyhow::Result<Value> {
 async fn run_sync(s: &AppState) -> anyhow::Result<()> {
     sync::Command::new(s.connection.clone())
         .run(ShutdownListener::new(), s.wallet_dir.clone())
+        .await?;
+    // Compact blocks carry no memos. Fetch the full transactions the wallet queued for enhancement, so a received
+    // note gets its memo (the payment id) — without this, `/received?memo=` never matches.
+    enhance::Command::new(s.connection.clone())
+        .run(s.wallet_dir.clone())
         .await
 }
 
@@ -320,7 +326,7 @@ async fn do_received(s: &AppState, q: ReceivedQuery) -> anyhow::Result<Value> {
             "mined_height": mined_height,
             "block_time": block_time,
             "zatoshis": value,
-            "pool": match pool { 0 => "transparent", 2 => "sapling", 3 => "orchard", _ => "unknown" },
+            "pool": match pool { 0 => "transparent", 2 => "sapling", 3 => "orchard", 4 => "ironwood", _ => "unknown" },
             "memo": memo_text,
         }));
     }

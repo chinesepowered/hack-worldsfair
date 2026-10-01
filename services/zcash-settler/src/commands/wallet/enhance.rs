@@ -74,11 +74,20 @@ async fn fetch_transaction<P: Parameters>(
 }
 
 impl Command {
+    /// sotto: construct without clap, so `serve` can enhance after every sync.
+    pub(crate) fn new(connection: ConnectionArgs) -> Self {
+        Self { connection }
+    }
+
     pub(crate) async fn run(self, wallet_dir: Option<String>) -> Result<(), anyhow::Error> {
         let params = get_wallet_network(wallet_dir.as_ref())?;
         let (_, db_data) = get_db_paths(wallet_dir.as_ref());
 
         let mut db_data = WalletDb::for_path(db_data, params, SystemClock, OsRng)?;
+        // sotto: nothing queued → don't open a lightwalletd connection (serve calls this on every poll).
+        if db_data.transaction_data_requests()?.is_empty() {
+            return Ok(());
+        }
         let chain_tip = db_data.chain_height()?.ok_or_else(|| {
             anyhow!("Chain height must be available to perform transaction enhancement.")
         })?;

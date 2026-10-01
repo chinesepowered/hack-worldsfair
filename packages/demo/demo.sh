@@ -10,7 +10,7 @@
 #
 # Knobs (environment): INTERVAL_MS, BUDGET_USD, WAIT_FOR_START=1 (Capy waits for POST :4021/start),
 #   TEMPO_RECIPIENT=0x… (accept Tempo over MPP), ZCASH_SETTLER_URL + ZCASH_ADDRESS (accept shielded Zcash; a running
-#   payee settler), NODE_USE_ENV_PROXY=1 behind an HTTPS proxy (Tempo verification calls a public RPC).
+#   payee settler; ZCASH_WAIT_MS how long to wait for the payment to be mined, default 90 s), NODE_USE_ENV_PROXY=1 behind an HTTPS proxy (Tempo verification calls a public RPC).
 #
 # State lives in $DEMO_DIR (default ~/.sotto-demo): keys, ledger, logs, pids. Nothing is written to the repo
 # except packages/demo/demo-solana.json and receipts.jsonl, both gitignored.
