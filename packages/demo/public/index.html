@@ -114,7 +114,7 @@
 <script>
 const $=id=>document.getElementById(id);
 const short=s=>s?s.slice(0,6)+'…'+s.slice(-4):'';
-const railName={'solana-confidential':'Solana · confidential',confidential:'Solana · confidential','zcash-shielded':'Zcash · shielded',shielded:'Zcash · shielded',tempo:'Tempo'};
+const railName={'solana-confidential':'Solana · confidential',confidential:'Solana · confidential','zcash-shielded':'Zcash · shielded',shielded:'Zcash · shielded',tempo:'Tempo · MPP'};
 let explorerTx=null, audited={};
 const txLink=sig=>explorerTx?`<a href="${explorerTx.replace('{sig}',sig)}" target="_blank" rel="noopener">${short(sig)}</a>`:short(sig);
 async function j(u,o){const r=await fetch(u,o);return r.ok?r.json():Promise.reject(await r.json().catch(()=>({error:r.status})))}
@@ -126,7 +126,7 @@ async function tick(){
     $('obs-acct').textContent=`account ${o.tokenAccount} · public balance ${o.publicBalance}`;
     $('obs').innerHTML=o.transactions.length?o.transactions.map(t=>`<tr><td>${txLink(t.signature)}</td><td>${t.slot}</td><td class="amt"><span class="bar">0.000000</span></td></tr>`).join(''):'<tr><td colspan=3 class="empty">no transactions yet</td></tr>';
     const w=await j('/api/owner');
-    $('own').innerHTML=w.receipts.length?w.receipts.map(r=>`<tr><td class="fit">${new Date(r.at).toLocaleTimeString()}</td><td>${new URL(r.resource).pathname}</td><td class="amt ok fit">${r.details?.usd??r.amount}</td><td class="fit">${railName[r.scheme]??r.scheme}</td></tr>`).join(''):'<tr><td colspan=4 class="empty">no receipts yet</td></tr>';
+    $('own').innerHTML=w.receipts.length?w.receipts.map(r=>`<tr><td class="fit">${new Date(r.at).toLocaleTimeString()}</td><td><span class="dim">${r.agentId}</span> ${new URL(r.resource).pathname}</td><td class="amt ok fit">${r.details?.usd??r.amount}</td><td class="fit">${railName[r.scheme]??r.scheme}</td></tr>`).join(''):'<tr><td colspan=4 class="empty">no receipts yet</td></tr>';
     const conf=w.receipts.filter(r=>r.scheme==='solana-confidential'||r.scheme==='confidential').slice(0,8);
     $('aud').innerHTML=conf.length?conf.map(r=>{const a=audited[r.paymentId];return `<tr><td>${txLink(r.transactions[0])}</td><td class="amt fit">${a?(a.ok?`<span class="ok">$${a.usd}</span>`:`<span class="bad">${a.error}</span>`):'<span class="bar">0.000000</span>'}</td><td class="fit">${a?'<span class="dim">from ledger ✓</span>':`<button onclick="audit('${r.transactions[0]}','${r.paymentId}',this)">decrypt</button>`}</td></tr>`}).join(''):'<tr><td colspan=3 class="empty">no confidential payments yet</td></tr>';
     $('s-paid').textContent=w.receipts.length;

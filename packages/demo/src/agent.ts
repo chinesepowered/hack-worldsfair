@@ -2,7 +2,8 @@
  * The demo agent. Two modes:
  *   one-shot (default): buy quotes until the policy stops it, print receipts.
  *   LOOP=1: keep buying one quote every INTERVAL_MS and expose a control endpoint the dashboard uses:
- *     GET /status · POST /pause · POST /resume   (AGENT_PORT, default 4021)
+ *     GET /status · POST /pause · POST /resume · POST /start   (AGENT_PORT, default 4021)
+ *     WAIT_FOR_START=1 holds the first purchase until POST /start, so a recording or a live demo starts from zero.
  * Env: SOLANA_PAYER_KEYFILE (agent), DEMO_URL (default http://127.0.0.1:4020), BUDGET_USD (default 1), RECEIPTS_FILE
  */
 import { createClient, type KeyPairSigner } from "@solana/kit";
@@ -22,6 +23,8 @@ const agent = await SottoClient.create({
   receipts: new FileReceiptStore(process.env.RECEIPTS_FILE ?? new URL("../receipts.jsonl", import.meta.url).pathname),
   solana: { client, signer: client.payer as unknown as KeyPairSigner, network: cfg.network, mints: [{ mint: cfg.mint, decimals: cfg.decimals }] },
 });
+
+let started = process.env.WAIT_FOR_START !== "1";
 
 type Event = { at: string; kind: "paid" | "denied" | "free" | "error"; text: string; tx?: string; usd?: string };
 const events: Event[] = [];
@@ -45,7 +48,7 @@ async function buyOnce(path = "/premium/quote"): Promise<boolean> {
 
 async function status() {
   const { policy, remaining, spent } = await agent.policy.remaining(AGENT_ID);
-  return { agentId: AGENT_ID, paused: Boolean(policy?.paused), maxPerPaymentUsd: formatUsd6(policy?.maxPerPayment ?? 0n), dayBudgetUsd: policy?.perDay === undefined ? null : formatUsd6(policy.perDay), spentTodayUsd: formatUsd6(spent.day), remainingTodayUsd: remaining.day === undefined ? null : formatUsd6(remaining.day), receipts: (await agent.listReceipts()).length, events: events.slice(0, 30) };
+  return { agentId: AGENT_ID, started, paused: Boolean(policy?.paused), maxPerPaymentUsd: formatUsd6(policy?.maxPerPayment ?? 0n), dayBudgetUsd: policy?.perDay === undefined ? null : formatUsd6(policy.perDay), spentTodayUsd: formatUsd6(spent.day), remainingTodayUsd: remaining.day === undefined ? null : formatUsd6(remaining.day), receipts: (await agent.listReceipts()).length, events: events.slice(0, 30) };
 }
 
 if (process.env.LOOP === "1") {
@@ -53,11 +56,13 @@ if (process.env.LOOP === "1") {
   createServer(async (req, res) => {
     res.setHeader("content-type", "application/json");
     if (req.method === "POST" && (req.url === "/pause" || req.url === "/resume")) { agent.pause(req.url === "/pause"); res.end(JSON.stringify({ paused: req.url === "/pause" })); return; }
+    if (req.method === "POST" && req.url === "/start") { started = true; res.end(JSON.stringify({ started })); return; }
     if (req.url === "/status") { res.end(JSON.stringify(await status())); return; }
     res.statusCode = 404; res.end("{}");
   }).listen(port, "127.0.0.1", () => console.log(`agent control on http://127.0.0.1:${port}`));
   const interval = Number(process.env.INTERVAL_MS ?? 4000);
   const backoff = Number(process.env.BACKOFF_MS ?? 30_000);
+  while (!started) await new Promise(r => setTimeout(r, 100));
   for (;;) {
     const ok = await buyOnce();
     // a denied or failed purchase is not worth hammering: wait longer before asking again

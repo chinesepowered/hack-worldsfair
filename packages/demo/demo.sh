@@ -8,6 +8,10 @@
 #   ./demo.sh mcp      print the Claude Code MCP config for the sotto server (agent keys, local chain)
 #   ./demo.sh env      print `export SOTTO_*` lines for the sotto CLI / Agent Skill — eval "$(./demo.sh env)"
 #
+# Knobs (environment): INTERVAL_MS, BUDGET_USD, WAIT_FOR_START=1 (Capy waits for POST :4021/start),
+#   TEMPO_RECIPIENT=0x… (accept Tempo over MPP), ZCASH_SETTLER_URL + ZCASH_ADDRESS (accept shielded Zcash; a running
+#   payee settler), NODE_USE_ENV_PROXY=1 behind an HTTPS proxy (Tempo verification calls a public RPC).
+#
 # State lives in $DEMO_DIR (default ~/.sotto-demo): keys, ledger, logs, pids. Nothing is written to the repo
 # except packages/demo/demo-solana.json and receipts.jsonl, both gitignored.
 set -euo pipefail
@@ -33,7 +37,7 @@ case "${1:-start}" in
     for p in agent server validator; do stop_one $p; done; exit 0 ;;
   reset)
     for p in agent server validator; do stop_one $p; done
-    rm -rf "$DEMO_DIR/ledger" "$HERE/demo-solana.json" "$HERE/receipts.jsonl"; say "state wiped"; exec "$0" start ;;
+    rm -rf "$DEMO_DIR/ledger" "$DEMO_DIR/agents" "$DEMO_DIR/claude" "$HERE/demo-solana.json" "$HERE/receipts.jsonl"; say "state wiped"; exec "$0" start ;;
   mcp|env)
     [ -f "$HERE/demo-solana.json" ] || { echo "run ./demo.sh first"; exit 1; }
     MINT=$(node -p "require('$HERE/demo-solana.json').mint"); DEC=$(node -p "require('$HERE/demo-solana.json').decimals"); NET=$(node -p "require('$HERE/demo-solana.json').network")
@@ -41,7 +45,7 @@ case "${1:-start}" in
     if [ "$1" = mcp ]; then cat <<JSON
 { "mcpServers": { "sotto": { "command": "node", "args": ["$ROOT/packages/mcp-server/dist/index.js"],
   "env": { "SOTTO_AGENT_ID": "claude", "SOTTO_POLICY": "{\\"maxPerPaymentUsd\\":1,\\"perDayUsd\\":5,\\"allowHosts\\":[\\"127.0.0.1\\",\\"localhost\\"]}",
-           "SOTTO_STATE_DIR": "$DEMO_DIR/claude",
+           "SOTTO_STATE_DIR": "$DEMO_DIR/agents/claude",
            "SOTTO_SOLANA_RPC_URL": "$RPC", "SOTTO_SOLANA_KEYFILE": "$DEMO_DIR/agent.json",
            "SOTTO_SOLANA_NETWORK": "$NET", "SOTTO_SOLANA_MINTS": "[{\\"mint\\":\\"$MINT\\",\\"decimals\\":$DEC}]" } } } }
 JSON
@@ -49,7 +53,7 @@ JSON
     else cat <<SH
 export SOTTO_AGENT_ID=claude
 export SOTTO_POLICY='{"maxPerPaymentUsd":1,"perDayUsd":5,"allowHosts":["127.0.0.1","localhost"]}'
-export SOTTO_STATE_DIR="$DEMO_DIR/claude"
+export SOTTO_STATE_DIR="$DEMO_DIR/agents/claude"
 export SOTTO_SOLANA_RPC_URL="$RPC"
 export SOTTO_SOLANA_KEYFILE="$DEMO_DIR/agent.json"
 export SOTTO_SOLANA_NETWORK="$NET"
@@ -103,7 +107,7 @@ fi
 
 # 5. API + dashboard, then Capy
 stop_one server >/dev/null; stop_one agent >/dev/null
-(cd "$HERE" && SOLANA_PAYEE_KEYFILE="$DEMO_DIR/api.json" PORT="$PORT" bg server pnpm exec tsx src/server.ts)
+(cd "$HERE" && SOLANA_PAYEE_KEYFILE="$DEMO_DIR/api.json" PORT="$PORT" AGENTS_DIR="$DEMO_DIR/agents" bg server pnpm exec tsx src/server.ts)
 for i in $(seq 1 20); do curl -s -m 2 "http://127.0.0.1:$PORT/api/rails" >/dev/null 2>&1 && break; sleep 1; done
 (cd "$HERE" && LOOP=1 INTERVAL_MS="${INTERVAL_MS:-5000}" BUDGET_USD="$BUDGET_USD" DEMO_URL="http://127.0.0.1:$PORT" SOLANA_PAYER_KEYFILE="$DEMO_DIR/agent.json" bg agent pnpm exec tsx src/agent.ts)
 

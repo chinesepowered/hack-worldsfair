@@ -5,13 +5,14 @@
  *   /                        the dashboard: observer / owner / auditor / policy views
  *   /api/...                 JSON for the dashboard
  * Env: SOLANA_PAYEE_KEYFILE (the API's key), ZCASH_SETTLER_URL + ZCASH_ADDRESS (optional), TEMPO_RECIPIENT (optional),
- *      SOTTO_SECRET (MPP secret), PORT
+ *      SOTTO_SECRET (MPP secret), PORT, RECEIPTS_FILE (Capy's ledger), AGENTS_DIR (other agents' state dirs: <dir>/<agent>/receipts.jsonl)
  */
 import { findAssociatedTokenPda, TOKEN_2022_PROGRAM_ADDRESS } from "@solana-program/token-2022";
 import { createKeyPairSignerFromBytes, createSolanaRpc, type Address, type Signature } from "@solana/kit";
 import { elgamalSecretFromBytes, FileReceiptStore, SottoServer, verifyConfidentialPayment, ZcashSettlerClient } from "@sotto/sdk";
 import express from "express";
-import { readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
+import { join } from "node:path";
 
 const cfg = JSON.parse(readFileSync(new URL("../demo-solana.json", import.meta.url), "utf8")) as { rpcUrl: string; network: string; explorerTx?: string; mint: Address; decimals: number; agent: Address; api: Address; auditorElgamalPubkey: Address; auditorElgamalSecret: number[] };
 const api = await createKeyPairSignerFromBytes(new Uint8Array(JSON.parse(readFileSync(process.env.SOLANA_PAYEE_KEYFILE!, "utf8"))));
@@ -43,10 +44,12 @@ app.get("/api/observer", async (_q, res) => {
   res.json({ tokenAccount: apiToken, publicBalance: acct?.value.uiAmountString ?? "0", transactions: sigs.map(s => ({ signature: s.signature, slot: Number(s.slot), time: s.blockTime ? new Date(Number(s.blockTime) * 1000).toISOString() : null, amountVisible: null, memo: s.memo })) });
 });
 
-/** Owner view: the agent's signed receipts (its private ledger). */
+/** Owner view: every agent's signed receipts (their private ledgers) — Capy's, plus any CLI/MCP agent under AGENTS_DIR. */
 app.get("/api/owner", async (_q, res) => {
-  const file = process.env.RECEIPTS_FILE ?? new URL("../receipts.jsonl", import.meta.url).pathname;
-  const receipts = await new FileReceiptStore(file).list();
+  const files = [process.env.RECEIPTS_FILE ?? new URL("../receipts.jsonl", import.meta.url).pathname];
+  const dir = process.env.AGENTS_DIR;
+  if (dir && existsSync(dir)) for (const a of readdirSync(dir)) if (existsSync(join(dir, a, "receipts.jsonl"))) files.push(join(dir, a, "receipts.jsonl"));
+  const receipts = (await Promise.all(files.map(f => new FileReceiptStore(f).list()))).flat();
   res.json({ receipts: receipts.sort((a, b) => b.at.localeCompare(a.at)).slice(0, 50) });
 });
 
