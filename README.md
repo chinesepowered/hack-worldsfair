@@ -13,6 +13,11 @@
   <em>Built solo for Colosseum's Crypto World's Fair, Sep 14 – Oct 12, 2026 · Apache-2.0</em>
 </p>
 
+<p align="center">
+  <a href="docs/video/sotto-demo.mp4"><b>▶ Watch the demo (2:53)</b></a> — recorded end to end from the live system:
+  Solana confidential transfers, Tempo over MPP, a shielded Zcash payment, and Claude Code paying through the MCP server
+</p>
+
 ---
 
 ## For judges: the whole thing in 60 seconds
@@ -47,7 +52,7 @@ Any MCP client gets it through `sotto-mcp-server` with one line of config; any a
 | Confidential payment on Solana, 402 → 200 | **~1.6 s** (Token-2022 confidential transfer, 5 transactions, range proof staged in an SPL Record account) |
 | Auditor decrypts an amount from the ledger | **~0.8 s**, no input from the payer |
 | Tempo payment over MPP on Moderato | **~1.7 s**, policy-gated, receipted |
-| Zcash | settler syncs against `testnet.zec.rocks`; both protocol faces pass; live send pending testnet funds |
+| Shielded payment on Zcash testnet, 402 → 200 | **one block** (~30–90 s): sender, receiver and amount hidden; the payee matches the payment ID in the encrypted memo with a viewing key |
 | Tests | 23 tests, unit and integration: local Solana validator, live Tempo, fake and live Zcash settlers, MCP over stdio, the CLI as a subprocess |
 
 **Meet Capy** — the demo agent: a capybara that buys exactly what it needs, never more, never loudly. **The 4-slide pitch:** [`slides.html`](slides.html) · **Scripts:** [`docs/pitch.md`](docs/pitch.md), [`docs/demo-script.md`](docs/demo-script.md) · **Design:** [`docs/architecture.md`](docs/architecture.md)
@@ -165,8 +170,8 @@ eval "$(packages/demo/demo.sh env)" && sotto fetch http://127.0.0.1:4020/premium
 
 - Solana confidential rail: complete, end to end, on a local validator that mirrors mainnet's program set
   (mainnet has had the ZK ElGamal program back since June 2026; usage is near zero — this is early).
-- Zcash: settlers, verification and both protocol faces complete; the live shielded send is waiting on
-  testnet faucets that were down during week 1.
+- Zcash: complete on testnet, end to end. The payee accepts a payment once it is mined (one block, ~75 s on
+  average); accepting it from the mempool for small amounts is designed in the SDK but not wired into the settler yet.
 - Tempo: complete on Moderato.
 - Policy is enforced client-side before any signature. On-chain enforcement (EIP-7702 delegate, session
   keys) is the next step, not shipped.

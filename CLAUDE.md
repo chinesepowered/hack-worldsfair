@@ -69,7 +69,10 @@ Settlement backends, each a first-class integration (these are the hackathon tra
   `TEMPO_TEST_PK=… NODE_USE_ENV_PROXY=1 pnpm exec tsx scripts/spike-tempo-mpp.ts`.
 - Tempo faucet: `curl -X POST https://tempo.xyz/developers/api/faucet -H 'content-type: application/json' -d '{"address":"0x…"}'` (1M of each test stablecoin).
 - Deck + dashboard identity: ledger paper / ink / carmine accent; Bricolage Grotesque + Source Serif 4 + IBM Plex Mono; the redaction-bar device. Keep new UI on those tokens (`slides.html`, `packages/demo/public/index.html`).
-- Zcash testnet: `zcash-devtool wallet -w <dir> init --name sotto -i <age-identity> -n test -s zecrocks`, then `sync`, `list-addresses`, `balance`, `send`. Faucets: fauzec.com API (`POST /api/v1/claim`), zcashfaucet.jinolabs.xyz (browser PoW).
+- Zcash testnet: `zcash-devtool wallet -w <dir> init --name sotto -i <age-identity> -n test -s zecrocks`, then `sync`, `list-addresses`, `balance`, `send`. Faucets: fauzec.com API (`POST /api/v1/claim` with `{"address":…,"network":"testnet"}` — 1 TAZ, worked Oct 1), zcashfaucet.jinolabs.xyz (browser PoW, never paid out).
+  Testnet funds land in the **Ironwood** pool (pool code 4). Payer settler: the funded wallet on `:8777` with `-i <identity>`; payee: the viewing-key wallet on `:8778`.
+- Demo video: `packages/demo/video/make-video.sh` (narration → reset → record → assemble; see its README). Output committed at `docs/video/`.
+  Needs `ELEVENLABS_API_KEY` (from the human, never stored in the repo), `TEMPO_PK`, both settlers, ffmpeg (`pip install imageio-ffmpeg`).
 
 ## Human to-dos (Claude cannot do these)
 - [ ] Register: https://colosseum.com/arena/hackathon/register?entry=worldsfair (accept rules)
@@ -78,4 +81,5 @@ Settlement backends, each a first-class integration (these are the hackathon tra
 - [ ] Tempo workshop **Sep 16, 10am PT** and EF workshop **Sep 22, 10am PT** on Discord — ask what the judges want
 - [ ] ~10 demand-validation conversations with people shipping agents in SF; get quotes for the pitch video
 - [ ] Weekly 1-minute update videos (optional, recommended)
-- [ ] Final week: 2–3 min pitch video, ≤3 min demo video, GTM writeup, logo, submission form
+- [ ] Upload `docs/video/sotto-demo.mp4` (demo video, done) to YouTube/Loom for the submission form
+- [ ] Final week: 2–3 min pitch video, GTM writeup, logo, submission form

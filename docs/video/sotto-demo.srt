@@ -1,0 +1,175 @@
+1
+00:00:00,905 --> 00:00:02,250
+This is sotto:
+
+2
+00:00:02,379 --> 00:00:05,988
+confidential, budgeted, auditable payments for AI agents.
+
+3
+00:00:06,847 --> 00:00:10,874
+Today, every x402 payment an agent makes is public:
+
+4
+00:00:11,061 --> 00:00:14,461
+what it bought, from whom, and for how much.
+
+5
+00:00:14,742 --> 00:00:17,004
+Its strategy is readable on-chain —
+
+6
+00:00:17,075 --> 00:00:20,336
+and nothing caps what it can spend.
+
+7
+00:00:21,799 --> 00:00:23,532
+Here's a paid API.
+
+8
+00:00:23,552 --> 00:00:27,642
+It answers 402 with both kinds of challenge in one response —
+
+9
+00:00:27,662 --> 00:00:30,881
+x402, and the Machine Payments Protocol —
+
+10
+00:00:30,901 --> 00:00:32,414
+offering three rails:
+
+11
+00:00:32,434 --> 00:00:37,749
+Solana confidential transfers, shielded Zcash, and Tempo.
+
+12
+00:00:38,969 --> 00:00:41,092
+Meet Capy, our demo agent.
+
+13
+00:00:41,454 --> 00:00:43,286
+Its owner set a policy:
+
+14
+00:00:43,648 --> 00:00:47,605
+at most fifty cents a payment, a dollar fifty a day.
+
+15
+00:00:48,071 --> 00:00:50,547
+Each quote costs twenty-five cents,
+
+16
+00:00:50,567 --> 00:00:55,569
+and settles as a Solana confidential transfer in under two seconds.
+
+17
+00:00:57,846 --> 00:01:00,990
+Six quotes in, the budget is spent —
+
+18
+00:01:01,271 --> 00:01:04,973
+and the seventh is refused before anything is signed.
+
+19
+00:01:06,527 --> 00:01:08,836
+Here are the same payments, three ways.
+
+20
+00:01:08,965 --> 00:01:10,826
+The public sees the transactions,
+
+21
+00:01:10,846 --> 00:01:12,649
+but every amount is encrypted,
+
+22
+00:01:12,669 --> 00:01:16,069
+and the API's public balance reads zero.
+
+23
+00:01:17,181 --> 00:01:18,886
+The owner sees everything:
+
+24
+00:01:19,073 --> 00:01:23,843
+a signed receipt per payment, with the policy decision behind it.
+
+25
+00:01:24,906 --> 00:01:27,649
+And an auditor with the mint's auditor key
+
+26
+00:01:27,669 --> 00:01:30,616
+decrypts the exact amount from the ledger itself.
+
+27
+00:01:30,897 --> 00:01:33,043
+The proofs are found on-chain;
+
+28
+00:01:33,416 --> 00:01:36,491
+nothing is taken on the agent's word.
+
+29
+00:01:38,291 --> 00:01:39,984
+Any agent can plug in.
+
+30
+00:01:40,601 --> 00:01:43,925
+This is Claude Code with the sotto MCP server,
+
+31
+00:01:43,945 --> 00:01:47,090
+asked to buy a one-dollar research report.
+
+32
+00:01:51,030 --> 00:01:55,231
+It paid confidentially, and it quotes its receipt.
+
+33
+00:01:55,790 --> 00:01:58,812
+Agents with a shell get the same tools as an Agent Skill,
+
+34
+00:01:58,832 --> 00:02:01,222
+and every door shares one kill switch:
+
+35
+00:02:01,351 --> 00:02:04,728
+pause, and the next payment is refused.
+
+36
+00:02:07,597 --> 00:02:12,448
+The same policy runs on Tempo, over its native Machine Payments Protocol:
+
+37
+00:02:12,636 --> 00:02:16,813
+twenty-five cents, paid on the Moderato testnet —
+
+38
+00:02:17,777 --> 00:02:21,978
+and there it is, on Tempo's public explorer.
+
+39
+00:02:25,795 --> 00:02:28,719
+On Zcash, the payment is fully shielded.
+
+40
+00:02:29,092 --> 00:02:31,603
+The API finds it with a viewing key,
+
+41
+00:02:31,623 --> 00:02:35,197
+by the payment ID in the encrypted memo.
+
+42
+00:02:42,005 --> 00:02:45,080
+One owner, one ledger, three chains.
+
+43
+00:02:45,209 --> 00:02:48,435
+sotto: confidential, not anonymous.
+
+44
+00:02:48,623 --> 00:02:51,221
+Open source, and ready for any agent.
