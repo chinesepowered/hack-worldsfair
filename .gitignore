@@ -29,3 +29,6 @@ coverage/
 # demo artifacts (contain keys)
 packages/demo/demo-solana.json
 packages/demo/receipts.jsonl
+
+# demo video build output (frames, voice clips, renders)
+packages/demo/video/out/

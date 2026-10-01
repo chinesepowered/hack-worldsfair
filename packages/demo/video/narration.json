@@ -1,0 +1,232 @@
+{
+  "voice": "zmcVlqmyk3Jpn5AVYcAL",
+  "model": "eleven_multilingual_v2",
+  "settings": {
+    "stability": 0.5,
+    "similarity_boost": 0.9,
+    "style": 0.0,
+    "use_speaker_boost": true,
+    "speed": 1.04
+  },
+  "clips": [
+    {
+      "id": "title",
+      "chunks": [
+        {
+          "text": "This is sotto:",
+          "say": "This is sotto."
+        },
+        {
+          "text": "confidential, budgeted, auditable payments for AI agents."
+        }
+      ]
+    },
+    {
+      "id": "problem",
+      "chunks": [
+        {
+          "text": "Today, every x402 payment an agent makes is public:",
+          "say": "Today, every x-four-oh-two payment an agent makes is public:"
+        },
+        {
+          "text": "what it bought, from whom, and for how much."
+        },
+        {
+          "text": "Its strategy is readable on-chain \u2014"
+        },
+        {
+          "text": "and nothing caps what it can spend."
+        }
+      ]
+    },
+    {
+      "id": "challenge",
+      "chunks": [
+        {
+          "text": "Here's a paid API.",
+          "say": "Here's a paid A P I."
+        },
+        {
+          "text": "It answers 402 with both kinds of challenge in one response \u2014",
+          "say": "It answers four-oh-two, with both kinds of challenge in one response \u2014"
+        },
+        {
+          "text": "x402, and the Machine Payments Protocol \u2014",
+          "say": "x-four-oh-two, and the Machine Payments Protocol \u2014"
+        },
+        {
+          "text": "offering three rails:"
+        },
+        {
+          "text": "Solana confidential transfers, shielded Zcash, and Tempo.",
+          "say": "Solana confidential transfers, shielded Zee-cash, and Tempo."
+        }
+      ]
+    },
+    {
+      "id": "capy",
+      "chunks": [
+        {
+          "text": "Meet Capy, our demo agent.",
+          "say": "Meet Cappy, our demo agent."
+        },
+        {
+          "text": "Its owner set a policy:"
+        },
+        {
+          "text": "at most fifty cents a payment, a dollar fifty a day."
+        },
+        {
+          "text": "Each quote costs twenty-five cents,"
+        },
+        {
+          "text": "and settles as a Solana confidential transfer in under two seconds."
+        }
+      ]
+    },
+    {
+      "id": "denied",
+      "chunks": [
+        {
+          "text": "Six quotes in, the budget is spent \u2014"
+        },
+        {
+          "text": "and the seventh is refused before anything is signed."
+        }
+      ]
+    },
+    {
+      "id": "public",
+      "chunks": [
+        {
+          "text": "Here are the same payments, three ways."
+        },
+        {
+          "text": "The public sees the transactions,"
+        },
+        {
+          "text": "but every amount is encrypted,"
+        },
+        {
+          "text": "and the API's public balance reads zero.",
+          "say": "and the A P I's public balance reads zero."
+        }
+      ]
+    },
+    {
+      "id": "owner",
+      "chunks": [
+        {
+          "text": "The owner sees everything:"
+        },
+        {
+          "text": "a signed receipt per payment, with the policy decision behind it."
+        }
+      ]
+    },
+    {
+      "id": "auditor",
+      "chunks": [
+        {
+          "text": "And an auditor with the mint's auditor key"
+        },
+        {
+          "text": "decrypts the exact amount from the ledger itself."
+        },
+        {
+          "text": "The proofs are found on-chain;"
+        },
+        {
+          "text": "nothing is taken on the agent's word."
+        }
+      ]
+    },
+    {
+      "id": "claude",
+      "chunks": [
+        {
+          "text": "Any agent can plug in."
+        },
+        {
+          "text": "This is Claude Code with the sotto MCP server,"
+        },
+        {
+          "text": "asked to buy a one-dollar research report."
+        }
+      ]
+    },
+    {
+      "id": "claude-paid",
+      "chunks": [
+        {
+          "text": "It paid confidentially, and it quotes its receipt."
+        }
+      ]
+    },
+    {
+      "id": "kill",
+      "chunks": [
+        {
+          "text": "Agents with a shell get the same tools as an Agent Skill,"
+        },
+        {
+          "text": "and every door shares one kill switch:"
+        },
+        {
+          "text": "pause, and the next payment is refused."
+        }
+      ]
+    },
+    {
+      "id": "tempo",
+      "chunks": [
+        {
+          "text": "The same policy runs on Tempo, over its native Machine Payments Protocol:"
+        },
+        {
+          "text": "twenty-five cents, paid on the Moderato testnet \u2014"
+        }
+      ]
+    },
+    {
+      "id": "tempo-explorer",
+      "chunks": [
+        {
+          "text": "and there it is, on Tempo's public explorer."
+        }
+      ]
+    },
+    {
+      "id": "zcash",
+      "chunks": [
+        {
+          "text": "On Zcash, the payment is fully shielded.",
+          "say": "On Zee-cash, the payment is fully shielded."
+        },
+        {
+          "text": "The API finds it with a viewing key,",
+          "say": "The A P I finds it with a viewing key,"
+        },
+        {
+          "text": "by the payment ID in the encrypted memo.",
+          "say": "by the payment I D in the encrypted memo."
+        }
+      ]
+    },
+    {
+      "id": "close",
+      "chunks": [
+        {
+          "text": "One owner, one ledger, three chains."
+        },
+        {
+          "text": "sotto: confidential, not anonymous.",
+          "say": "Sotto. Confidential, not anonymous."
+        },
+        {
+          "text": "Open source, and ready for any agent."
+        }
+      ]
+    }
+  ]
+}
