@@ -28,8 +28,9 @@ createServer(async (req, res) => {
     return;
   }
   const rel = url.pathname === "/" ? "index.html" : normalize(url.pathname).replace(/^\/+/, "");
-  const file = rel === "slides.html" ? join(REPO, "slides.html") : join(STAGE, rel);
-  if (!file.startsWith(STAGE) && rel !== "slides.html") { res.writeHead(403); res.end(); return; }
+  const IMG = join(REPO, "docs", "img") + "/";
+  const file = rel === "slides.html" ? join(REPO, "slides.html") : rel.startsWith("img/") ? join(IMG, rel.slice(4)) : join(STAGE, rel);
+  if (!file.startsWith(STAGE) && !file.startsWith(IMG) && rel !== "slides.html") { res.writeHead(403); res.end(); return; }
   let data;
   try { data = readFileSync(file); } catch { res.writeHead(404); res.end("not found"); return; }
   res.writeHead(200, { "content-type": TYPES[extname(file)] ?? "application/octet-stream" });

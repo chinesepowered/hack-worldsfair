@@ -1,0 +1,45 @@
+{
+  "voice": "zmcVlqmyk3Jpn5AVYcAL",
+  "model": "eleven_multilingual_v2",
+  "settings": { "stability": 0.5, "similarity_boost": 0.9, "style": 0.0, "use_speaker_boost": true, "speed": 1.04 },
+  "clips": [
+    { "id": "hello", "chunks": [
+      { "text": "Hi — I'm a solo Chinese builder, based in San Francisco," },
+      { "text": "and this is sotto.", "say": "and this is sotto." } ] },
+    { "id": "record", "chunks": [
+      { "text": "Before sotto, a hackathon project of mine grew into web3 games" },
+      { "text": "that reached up to two million mainnet transactions a month." },
+      { "text": "So I know what it takes to turn a hackathon build into something people use every day." } ] },
+    { "id": "problem", "chunks": [
+      { "text": "Now I'm building payments for AI agents." },
+      { "text": "Agents are starting to buy their own data and APIs," },
+      { "text": "and today every one of those payments is public:" },
+      { "text": "what they bought, from whom, and for how much." },
+      { "text": "And nothing caps what an agent can spend." } ] },
+    { "id": "product", "chunks": [
+      { "text": "sotto makes those payments confidential by default," },
+      { "text": "bounded by a policy the owner sets," },
+      { "text": "and auditable with viewing keys." },
+      { "text": "The public sees that a payment happened, not what it was." },
+      { "text": "The owner sees every receipt, and an auditor can check exact amounts from the chain." } ] },
+    { "id": "built", "chunks": [
+      { "text": "It works with what agents already use:" },
+      { "text": "x402, the Machine Payments Protocol, an MCP server and an Agent Skill.", "say": "x-four-oh-two, the Machine Payments Protocol, an M C P server, and an Agent Skill." },
+      { "text": "And it runs end to end on Solana, Tempo and Zcash —", "say": "And it runs end to end on Solana, Tempo, and Zee-cash —" },
+      { "text": "where it's already live on the new NU7 testnet upgrade.", "say": "where it's already live on the new N U seven testnet upgrade." } ] },
+    { "id": "whyme", "chunks": [
+      { "text": "Why me?" },
+      { "text": "I've already taken a hackathon project to millions of mainnet transactions." },
+      { "text": "And I ship fast: working solo with Claude Code, I built sotto in three weeks —" },
+      { "text": "the SDK, the MCP server, and a Rust Zcash service.", "say": "the S D K, the M C P server, and a Rust Zee-cash service." } ] },
+    { "id": "whynow", "chunks": [
+      { "text": "Why now?" },
+      { "text": "Solana's confidential transfers came back to mainnet this June," },
+      { "text": "and almost nobody uses them yet." },
+      { "text": "Agents are just starting to pay for things." },
+      { "text": "The rails are ready, and nobody has laid them for agents." } ] },
+    { "id": "ask", "chunks": [
+      { "text": "I'm looking for the accelerator, and a first design partner whose agents buy data." },
+      { "text": "sotto: confidential, not anonymous. Thank you.", "say": "Sotto. Confidential, not anonymous. Thank you." } ] }
+  ]
+}

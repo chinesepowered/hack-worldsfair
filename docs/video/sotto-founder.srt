@@ -1,0 +1,119 @@
+1
+00:00:00,910 --> 00:00:05,116
+Hi — I'm a solo Chinese builder, based in San Francisco,
+
+2
+00:00:05,136 --> 00:00:06,922
+and this is sotto.
+
+3
+00:00:07,879 --> 00:00:12,027
+Before sotto, a hackathon project of mine grew into web3 games
+
+4
+00:00:12,047 --> 00:00:15,389
+that reached up to two million mainnet transactions a month.
+
+5
+00:00:15,669 --> 00:00:21,043
+So I know what it takes to turn a hackathon build into something people use every day.
+
+6
+00:00:22,006 --> 00:00:24,888
+Now I'm building payments for AI agents.
+
+7
+00:00:24,908 --> 00:00:27,768
+Agents are starting to buy their own data and APIs,
+
+8
+00:00:27,788 --> 00:00:30,270
+and today every one of those payments is public:
+
+9
+00:00:30,458 --> 00:00:33,963
+what they bought, from whom, and for how much.
+
+10
+00:00:34,243 --> 00:00:37,817
+And nothing caps what an agent can spend.
+
+11
+00:00:38,776 --> 00:00:41,658
+sotto makes those payments confidential by default,
+
+12
+00:00:41,678 --> 00:00:44,161
+bounded by a policy the owner sets,
+
+13
+00:00:44,233 --> 00:00:46,460
+and auditable with viewing keys.
+
+14
+00:00:47,077 --> 00:00:50,779
+The public sees that a payment happened, not what it was.
+
+15
+00:00:51,257 --> 00:00:57,141
+The owner sees every receipt, and an auditor can check exact amounts from the chain.
+
+16
+00:00:58,104 --> 00:01:00,598
+It works with what agents already use:
+
+17
+00:01:01,343 --> 00:01:07,239
+x402, the Machine Payments Protocol, an MCP server and an Agent Skill.
+
+18
+00:01:07,833 --> 00:01:11,744
+And it runs end to end on Solana, Tempo and Zcash —
+
+19
+00:01:11,908 --> 00:01:16,980
+where it's already live on the new NU7 testnet upgrade.
+
+20
+00:01:18,085 --> 00:01:19,244
+Why me?
+
+21
+00:01:19,954 --> 00:01:23,981
+I've already taken a hackathon project to millions of mainnet transactions.
+
+22
+00:01:24,238 --> 00:01:30,274
+And I ship fast: working solo with Claude Code, I built sotto in three weeks —
+
+23
+00:01:30,438 --> 00:01:35,614
+the SDK, the MCP server, and a Rust Zcash service.
+
+24
+00:01:36,674 --> 00:01:37,729
+Why now?
+
+25
+00:01:38,207 --> 00:01:41,600
+Solana's confidential transfers came back to mainnet this June,
+
+26
+00:01:41,620 --> 00:01:43,789
+and almost nobody uses them yet.
+
+27
+00:01:44,162 --> 00:01:46,255
+Agents are just starting to pay for things.
+
+28
+00:01:46,275 --> 00:01:50,349
+The rails are ready, and nobody has laid them for agents.
+
+29
+00:01:51,408 --> 00:01:55,853
+I'm looking for the accelerator, and a first design partner whose agents buy data.
+
+30
+00:01:56,621 --> 00:02:01,460
+sotto: confidential, not anonymous. Thank you.

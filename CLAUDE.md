@@ -84,4 +84,5 @@ Settlement backends, each a first-class integration (these are the hackathon tra
 - [ ] ~10 demand-validation conversations with people shipping agents in SF; get quotes for the pitch video
 - [ ] Weekly 1-minute update videos (optional, recommended)
 - [x] Demo video uploaded: https://www.youtube.com/watch?v=4qkV0ExM-Z8 (source: `docs/video/sotto-demo.mp4`)
-- [ ] Final week: 2–3 min pitch video, GTM writeup, logo, submission form
+- [ ] Upload `docs/video/sotto-founder.mp4` (founder video, rendered with an AI voice — or re-record the narration in your own voice) for the submission form
+- [ ] Final week: GTM writeup, submission form (logo done: `docs/img/logo-square.png`)

@@ -26,3 +26,9 @@ ELEVENLABS_API_KEY=… TEMPO_PK=0x… TEMPO_RECIPIENT=0x… ZCASH_ADDRESS=utest1
 Prerequisites: the Solana CLI, `zcash-settler serve` for the payer (funded, `:8777`) and the payee (viewing key,
 `:8778`), Chromium (`CHROME=…`), ffmpeg, and Claude Code signed in. `PREVIEW=1 node record.mjs out/preview` renders
 one still per stage layer without recording. Keys are read from the environment, never from files in the repo.
+
+## The founder video
+
+`record-intro.mjs` renders the second video (who, what, why me, why now, the ask) on the same stage from
+`narration-intro.json`: `NARRATION=./narration-intro.json node tts.mjs out/voice-intro`, then
+`VOICE_DIR=out/voice-intro node record-intro.mjs out/intro` and `node assemble.mjs out/intro out/voice-intro out/sotto-founder.mp4`.

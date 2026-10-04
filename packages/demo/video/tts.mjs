@@ -11,7 +11,7 @@ const key = process.env.ELEVENLABS_API_KEY;
 if (!key) throw new Error("set ELEVENLABS_API_KEY");
 const [outDir = "out/voice", ...only] = process.argv.slice(2);
 mkdirSync(outDir, { recursive: true });
-const n = JSON.parse(readFileSync(new URL("./narration.json", import.meta.url), "utf8"));
+const n = JSON.parse(readFileSync(new URL(process.env.NARRATION ?? "./narration.json", import.meta.url), "utf8"));   // NARRATION=narration-intro.json for the intro video
 const spoken = clip => clip.chunks.map(c => c.say ?? c.text).join(" ");
 
 for (const [i, clip] of n.clips.entries()) {
