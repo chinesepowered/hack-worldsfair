@@ -1,12 +1,12 @@
 use clap::Args;
-use rand::rngs::OsRng;
+use rand::{rand_core::UnwrapErr, rngs::SysRng};
 use uuid::Uuid;
 use zcash_client_backend::data_api::{Account, WalletWrite};
 use zcash_client_sqlite::{WalletDb, util::SystemClock};
 use zcash_keys::{address::Address, keys::UnifiedAddressRequest};
 
 use crate::{
-    commands::{inspect::address::inspect, select_account},
+    commands::select_account,
     config::get_wallet_network,
     data::get_db_paths,
 };
@@ -30,7 +30,7 @@ impl Command {
     pub(crate) fn run(self, wallet_dir: Option<String>) -> anyhow::Result<()> {
         let params = get_wallet_network(wallet_dir.as_ref())?;
         let (_, db_data) = get_db_paths(wallet_dir.as_ref());
-        let mut db_data = WalletDb::for_path(db_data, params, SystemClock, OsRng)?;
+        let mut db_data = WalletDb::for_path(db_data, params, SystemClock, UnwrapErr(SysRng))?;
 
         let account = select_account(&db_data, self.account_id)?;
 
@@ -42,7 +42,7 @@ impl Command {
         println!("     Address: {ua_str}");
 
         let zaddr = Address::from(ua).to_zcash_address(&params);
-        inspect(zaddr);
+        println!("     Encoded: {}", zaddr.encode());
 
         #[cfg(feature = "qr")]
         if self.display_qr {

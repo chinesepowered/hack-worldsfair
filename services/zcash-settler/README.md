@@ -98,6 +98,8 @@ conditions.
 
 ## sotto: `serve`
 
+Built on librustzcash's NU7 pre-releases, so it sends v6 transactions on Zcash testnet after NU7 (see `VENDORED.md`).
+
 ```bash
 zcash-settler wallet -w <wallet_dir> serve --listen 127.0.0.1:8777 -i <age identity>   # spending wallet (payer)
 zcash-settler wallet -w <viewing_dir> serve --listen 127.0.0.1:8778                     # viewing-key wallet (payee): /send is refused

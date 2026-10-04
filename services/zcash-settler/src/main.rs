@@ -15,7 +15,6 @@ mod commands;
 mod config;
 mod data;
 mod error;
-mod helpers;
 mod remote;
 mod socks;
 mod ui;
@@ -40,24 +39,11 @@ pub(crate) struct MyOptions {
 
 #[derive(Debug, Subcommand)]
 pub(crate) enum Command {
-    /// Inspect Zcash-related data
-    Inspect(commands::inspect::Command),
-
     /// Manipulate a local wallet backed by `zcash_client_sqlite`
     Wallet(commands::Wallet),
 
     /// Manipulate multisig accounts
     Zip48(commands::Zip48),
-
-    /// Send funds using PCZTs
-    Pczt(commands::Pczt),
-
-    /// Migrate wallet funds between value pools (Orchard -> Ironwood)
-    Migration(commands::Migration),
-
-    /// Emulate a Keystone device
-    #[cfg(feature = "pczt-qr")]
-    Keystone(commands::Keystone),
 
     CreateMultisigAddress(commands::create_multisig_address::Command),
 }
@@ -76,14 +62,6 @@ fn main() -> Result<(), anyhow::Error> {
                 commands::wallet::Command::Sync(commands::wallet::sync::Command {
                     defrag: true, ..
                 }),
-            ..
-        })) => {
-            tui_logger::init_logger(level_filter.parse().unwrap())?;
-            Some(tui_logger::TuiTracingSubscriberLayer)
-        }
-        #[cfg(feature = "pczt-qr")]
-        Some(Command::Pczt(commands::Pczt {
-            command: commands::pczt::Command::ToQr(commands::pczt::qr::Send { tui: true, .. }),
             ..
         })) => {
             tui_logger::init_logger(level_filter.parse().unwrap())?;
@@ -133,7 +111,6 @@ fn main() -> Result<(), anyhow::Error> {
         };
 
         match cmd {
-            Command::Inspect(command) => command.run().await,
             Command::Wallet(commands::Wallet {
                 wallet_dir,
                 command,
@@ -194,68 +171,6 @@ fn main() -> Result<(), anyhow::Error> {
                 commands::zip48::Command::VerifyAccount(command) => command.run(wallet_dir),
                 commands::zip48::Command::DeriveAddress(command) => command.run(wallet_dir),
             },
-            Command::Pczt(commands::Pczt {
-                wallet_dir,
-                command,
-            }) => match command {
-                commands::pczt::Command::Create(command) => command.run(wallet_dir).await,
-                commands::pczt::Command::CreateMax(command) => command.run(wallet_dir).await,
-                commands::pczt::Command::Shield(command) => command.run(wallet_dir).await,
-                commands::pczt::Command::CreateManual(command) => command.run(wallet_dir).await,
-                commands::pczt::Command::PayManual(command) => command.run(wallet_dir).await,
-                commands::pczt::Command::Inspect(command) => command.run(wallet_dir).await,
-                commands::pczt::Command::UpdateWithDerivation(command) => {
-                    command.run(wallet_dir).await
-                }
-                commands::pczt::Command::Redact(command) => command.run().await,
-                commands::pczt::Command::PlanBatches(command) => command.run(),
-                commands::pczt::Command::Prove(command) => command.run(wallet_dir).await,
-                commands::pczt::Command::Sign(command) => command.run(wallet_dir).await,
-                commands::pczt::Command::UpdateWithSignature(command) => command.run().await,
-                commands::pczt::Command::Combine(command) => command.run().await,
-                commands::pczt::Command::Extract(command) => command.run().await,
-                commands::pczt::Command::Send(command) => command.run(wallet_dir).await,
-                commands::pczt::Command::SendWithoutStoring(command) => {
-                    command.run(wallet_dir).await
-                }
-                #[cfg(feature = "pczt-qr")]
-                commands::pczt::Command::ToQr(command) => {
-                    command
-                        .run(
-                            shutdown,
-                            #[cfg(feature = "tui")]
-                            tui,
-                        )
-                        .await
-                }
-                #[cfg(feature = "pczt-qr")]
-                commands::pczt::Command::ToQrBatch(command) => command.run(shutdown).await,
-                #[cfg(feature = "pczt-qr")]
-                commands::pczt::Command::FromQr(command) => command.run(shutdown).await,
-                #[cfg(feature = "pczt-qr")]
-                commands::pczt::Command::FromQrBatch(command) => command.run(shutdown).await,
-                #[cfg(feature = "pczt-qr")]
-                commands::pczt::Command::BatchSign(command) => command.run(shutdown).await,
-            },
-            Command::Migration(commands::Migration {
-                wallet_dir,
-                command,
-            }) => match command {
-                commands::migration::Command::Plan(command) => command.run(wallet_dir),
-                commands::migration::Command::Commit(command) => command.run(wallet_dir),
-                commands::migration::Command::Status(command) => command.run(wallet_dir),
-                commands::migration::Command::Advance(command) => command.run(wallet_dir),
-            },
-            #[cfg(feature = "pczt-qr")]
-            Command::Keystone(commands::Keystone {
-                wallet_dir,
-                command,
-            }) => match command {
-                commands::keystone::Command::Enroll(command) => {
-                    command.run(shutdown, wallet_dir).await
-                }
-            },
-
             Command::CreateMultisigAddress(command) => command.run(),
         }
     })

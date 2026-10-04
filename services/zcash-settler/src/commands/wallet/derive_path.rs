@@ -186,15 +186,18 @@ impl Command {
                                         // Only encode as an address if the network
                                         // matches the wallet.
                                         #[allow(deprecated)]
-                                        network_match.then(|| {
-                                            sapling::zip32::ExtendedSpendingKey::master(
-                                                seed.expose_secret(),
-                                            )
-                                            .derive_child(zip32::ChildIndex::hardened(32))
-                                            .derive_child(zip32::ChildIndex::hardened(*coin_type))
-                                            .derive_child(zip32::ChildIndex::hardened(*account))
-                                            .to_extended_full_viewing_key()
-                                        })
+                                        network_match
+                                            .then(|| {
+                                                sapling::zip32::ExtendedSpendingKey::master(
+                                                    seed.expose_secret(),
+                                                )
+                                                // each derivation step can fail (ZIP 32: skip to the next index)
+                                                .and_then(|master| master.derive_child(zip32::ChildIndex::hardened(32)))
+                                                .and_then(|k| k.derive_child(zip32::ChildIndex::hardened(*coin_type)))
+                                                .and_then(|k| k.derive_child(zip32::ChildIndex::hardened(*account)))
+                                                .map(|k| k.to_extended_full_viewing_key())
+                                            })
+                                            .flatten()
                                     }
                                     _ => None,
                                 }
