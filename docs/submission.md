@@ -21,7 +21,7 @@ adoption is one line of config.
 
 ## Blockchains and tools integrated
 - **Solana** — Token-2022 confidential transfers (ZK ElGamal proof program), SPL Record, Memo; `@solana/kit`, `@solana-program/token-2022`, `@solana/zk-sdk`
-- **Zcash** — shielded (Orchard) payments with memo-carried payment ids; `zcash_client_sqlite` / librustzcash light client via a Rust settler (fork of zcash-devtool), lightwalletd (zec.rocks)
+- **Zcash** — shielded payments with memo-carried payment ids; `zcash_client_sqlite` / librustzcash light client via a Rust settler (fork of zcash-devtool), lightwalletd (zec.rocks)
 - **Tempo** — TIP-20 stablecoin payments via the Machine Payments Protocol (`mppx`), Moderato testnet
 - **Protocols** — x402 v2 (`@x402/core`, `@x402/express`, `@x402/fetch`, `@x402/extensions` payment-identifier), MPP (`mppx`), Model Context Protocol (`@modelcontextprotocol/sdk`)
 - **Tracks claimed:** Solana, Zcash, Tempo. Compatible with Base/EVM x402 `exact` (not a claimed track).
