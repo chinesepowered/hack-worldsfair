@@ -33,7 +33,8 @@ Solo founder — [name], San Francisco. Part-time student, City College of San F
 San Francisco, CA, USA
 
 ## Logo
-`docs/img/logo.svg` (wordmark) — export a PNG for the portal.
+`docs/img/logo-square.png` (2048 × 2048, Capy + wordmark) for the portal; `docs/img/logo-icon.png` (Capy only) for
+avatars; `docs/img/cover.png` (3200 × 1800) as a banner or thumbnail.
 
 ## Repository
 https://github.com/chinesepowered/hack-worldsfair — **make it public before submitting** (rules §8(e) scores
