@@ -30,7 +30,11 @@ healthy() { curl -s -m 2 "$RPC" -X POST -H 'content-type: application/json' -d '
 bg() { local name=$1; shift
   if command -v setsid >/dev/null 2>&1; then setsid nohup "$@" > "$DEMO_DIR/$name.log" 2>&1 & else nohup "$@" > "$DEMO_DIR/$name.log" 2>&1 & fi
   echo $! > "$DEMO_DIR/$name.pid"; disown 2>/dev/null || true; }
-stop_one() { [ -f "$DEMO_DIR/$1.pid" ] && kill "$(cat "$DEMO_DIR/$1.pid")" 2>/dev/null && rm -f "$DEMO_DIR/$1.pid" && echo "  stopped $1" || true; }
+# stop a background process and wait until it has really exited (a restarting validator needs its ports back)
+stop_one() { local f="$DEMO_DIR/$1.pid" pid; [ -f "$f" ] || return 0; pid=$(cat "$f"); rm -f "$f"
+  kill "$pid" 2>/dev/null || return 0
+  for _ in $(seq 1 100); do kill -0 "$pid" 2>/dev/null || break; sleep 0.2; done
+  echo "  stopped $1"; }
 
 case "${1:-start}" in
   stop)

@@ -52,9 +52,10 @@ The pieces: `packages/sdk` holds the policy engine, receipts, rails, x402 scheme
 that teaches an agent to use it. `services/zcash-settler` is a Rust service that holds the Zcash wallet. `packages/demo`
 is a paid API, the owner and auditor dashboard, and Capy, the demo agent; `demo.sh` starts all of it.
 
-<p align="center"><img src="docs/img/dashboard.png" width="920" alt="The demo dashboard: Capy, Claude Code and a Tempo agent paying one API, as the public, the owner and an auditor see it"></p>
-<p align="center"><em>The demo dashboard, live: Capy, Claude Code and a Tempo agent paying one API. The public sees redacted
-amounts, the owner sees every receipt, the auditor decrypts from the chain, and the policy refuses Capy once its budget is spent.</em></p>
+<p align="center"><img src="docs/img/dashboard.png" width="920" alt="The demo dashboard: Capy, Claude Code, a Tempo agent and a Zcash agent paying one API, as the public, the owner and an auditor see it"></p>
+<p align="center"><em>The demo dashboard, live: Capy, Claude Code, a Tempo agent and a Zcash agent paying one API. The public sees
+redacted amounts, the owner sees every receipt across three chains, the auditor decrypts from the chain, and the policy
+refuses Capy once its budget is spent.</em></p>
 
 ## Sponsors at a glance
 
