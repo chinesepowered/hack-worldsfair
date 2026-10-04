@@ -91,7 +91,7 @@ try {
   await say("product"); await sleep(300);
   await card("built"); await sleep(700); await say("built"); await sleep(400);
 
-  await card("whyme"); await chapter("03", "why me", ""); await sleep(700); await say("whyme"); await sleep(400);
+  await card("whyme"); await chapter("03", "why me", ""); await sleep(700); await say("whyme"); await sleep(150); await say("whyme-built"); await sleep(400);
   await card("whynow"); await chapter("04", "why now", ""); await sleep(700); await say("whynow"); await sleep(400);
   await card("ask"); await chapter("05", "the ask", ""); await sleep(700); await say("ask"); await sleep(1800);
 } finally {

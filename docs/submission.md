@@ -48,7 +48,7 @@ is a fork of zcash/zcash-devtool (MIT/Apache-2.0) with a new `serve` HTTP comman
 documented in `services/zcash-settler/VENDORED.md`. AI coding tools (Claude Code) were used throughout.
 
 ## Videos
-- Presentation / founder video (2–3 min): `docs/video/sotto-founder.mp4` (2:03, captions in `sotto-founder.srt`), script in
+- Presentation / founder video (2–3 min): `docs/video/sotto-founder.mp4` (2:27, Chinese male AI voice, captions in `sotto-founder.srt`), script in
   `docs/pitch.md` — upload it and paste the link here
 - Demo (≤ 3 min): https://www.youtube.com/watch?v=4qkV0ExM-Z8 (2:53; source file and captions in `docs/video/`). Scene list: `docs/demo-script.md`
 
