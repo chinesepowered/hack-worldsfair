@@ -14,13 +14,13 @@
 </p>
 
 <p align="center">
-  <a href="docs/video/sotto-demo.mp4"><b>▶ Watch the demo (2:53)</b></a> — recorded end to end from the live system:
+  <a href="https://www.youtube.com/watch?v=4qkV0ExM-Z8"><b>▶ Watch the demo (2:53)</b></a> — recorded end to end from the live system:
   Solana confidential transfers, Tempo over MPP, a shielded Zcash payment, and Claude Code paying through the MCP server
 </p>
 
 ---
 
-## For judges: the whole thing in 60 seconds
+## The whole thing in 60 seconds
 
 **The problem.** Every agent payment today is a public record of what the agent bought, from whom, how often
 and for how much. Point an explorer at a trading agent's wallet and its strategy writes itself. And nothing

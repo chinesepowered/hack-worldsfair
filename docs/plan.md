@@ -38,7 +38,7 @@ Deadline: **Oct 12, 2026, 11:59pm PT**. Last five days are reserved for videos +
 
 ## Phase 3 — submission (Oct 7–12)
 - [~] `docs/pitch.md` + `slides.html` (4-slide deck, published as an artifact) → 2–3 min pitch video (human)
-- [x] Demo video (2:53) recorded from the live system by `packages/demo/video` → `docs/video/sotto-demo.mp4` + `.srt`; human uploads it
+- [x] Demo video (2:53) recorded from the live system by `packages/demo/video` → `docs/video/sotto-demo.mp4` + `.srt`; on YouTube: https://www.youtube.com/watch?v=4qkV0ExM-Z8
 - [ ] GTM + demand validation writeup; logo; submission form; all chains listed explicitly
 
 ## Cut without guilt

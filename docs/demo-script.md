@@ -1,6 +1,6 @@
 # Demo video — what is on screen, and what is said
 
-The video (`docs/video/sotto-demo.mp4`, 2:53, captions in `sotto-demo.srt`) is recorded from the running system
+The video (https://www.youtube.com/watch?v=4qkV0ExM-Z8 — source file and captions in `docs/video/`, 2:53) is recorded from the running system
 by `packages/demo/video` — see its README to re-record. Narration: ElevenLabs, voice *Sapphire*. Nothing on
 screen is mocked; the only time compression is the wait for a Zcash block, labelled fast-forward.
 

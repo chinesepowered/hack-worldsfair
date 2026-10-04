@@ -48,7 +48,7 @@ documented in `services/zcash-settler/VENDORED.md`. AI coding tools (Claude Code
 
 ## Videos
 - Presentation (2–3 min): script in `docs/pitch.md` — [link]
-- Demo (≤ 3 min): `docs/video/sotto-demo.mp4` (2:53, captions in `sotto-demo.srt`) — upload to YouTube or Loom, paste the link here. Scene list: `docs/demo-script.md`
+- Demo (≤ 3 min): https://www.youtube.com/watch?v=4qkV0ExM-Z8 (2:53; source file and captions in `docs/video/`). Scene list: `docs/demo-script.md`
 
 ## Go-to-market, demand validation, distribution (draft — replace bracketed claims with real quotes)
 **Who buys first.** Teams running agents that purchase data or tools on a schedule — trading and research
