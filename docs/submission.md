@@ -94,10 +94,10 @@ Agents are starting to pay for their own data, APIs and tools, and the standards
 Why now: the pieces finally exist. Solana's ZK ElGamal proof program, which powers confidential transfers, came back on mainnet in June 2026, and almost nobody uses it yet. Zcash's shielded payments and viewing keys are mature. x402 and MPP are becoming how agents pay, and MCP servers and Agent Skills let any agent adopt a new payment method with one line of config. sotto plugs into those standards instead of inventing new ones, so it grows with them.
 
 ### What technologies are you using or integrating with?
-*770/1000 characters*
+*789/1000 characters*
 
 Solana: Token-2022 confidential transfers with an auditor key, the ZK ElGamal proof program, SPL Record, Memo; @solana/kit, @solana-program/token-2022, @solana/zk-sdk.
-Zcash: shielded payments with the payment ID in the encrypted memo; a Rust settler on librustzcash (fork of zcash-devtool), lightwalletd.
+Zcash: shielded payments with the payment ID in the encrypted memo; a Rust settler on librustzcash's NU7 pre-releases (fork of zcash-devtool), lightwalletd.
 Tempo: TIP-20 stablecoin payments over the Machine Payments Protocol (mppx), Moderato testnet.
 Protocols: x402 v2 (@x402/core, payment-identifier extension), MPP, Model Context Protocol (@modelcontextprotocol/sdk), Agent Skills.
 Stack: TypeScript, Node 22, Express, Rust (tokio, axum), pnpm, Vitest.
@@ -105,9 +105,9 @@ Developer tools: solana-test-validator, Playwright (scripted demo recording), ff
 AI tools: Claude Code (main coding tool), ElevenLabs (demo narration).
 
 ### How does your product use these chains?
-*417/500 characters*
+*471/500 characters*
 
-Solana: agents pay with Token-2022 confidential transfers. Amounts are encrypted; the API and an auditor decrypt them from the chain with their own keys. Zcash: fully shielded payments; the payment ID rides in the encrypted memo and the API verifies with a viewing key. Tempo: stablecoin payments over Tempo's Machine Payments Protocol, gated by the same spend policy and receipted. One 402 response offers all three.
+Solana: agents pay with Token-2022 confidential transfers. Amounts are encrypted; the API and an auditor decrypt them from the chain with their own keys. Zcash: fully shielded payments, already on the NU7 testnet upgrade (v6 transactions); the payment ID rides in the encrypted memo and the API verifies with a viewing key. Tempo: stablecoin payments over Tempo's Machine Payments Protocol, gated by the same spend policy and receipted. One 402 response offers all three.
 
 ### Did anyone not listed on the team do meaningful work?
 *394/600 characters*
@@ -115,9 +115,9 @@ Solana: agents pay with Token-2022 confidential transfers. Amounts are encrypted
 No other people worked on it; I'm a solo founder. I built it with Claude Code as my AI coding tool (listed under technologies). Third-party code is used as unmodified open-source dependencies, except the Zcash settler, a fork of zcash-devtool (MIT/Apache-2.0) with a new HTTP serve command, credited in services/zcash-settler/VENDORED.md. All project code was written during the contest window.
 
 ### Anything else judges should know?
-*429/500 characters*
+*485/500 characters*
 
-Everything in the demo video is live, recorded from the running system: Zcash and Tempo payments on their testnets, and Solana confidential transfers on a local validator running mainnet's program set (devnet faucets were rate-limited). The spend policy is enforced by the agent's SDK before anything is signed; on-chain enforcement is next. Demo: youtube.com/watch?v=4qkV0ExM-Z8 · Code: github.com/chinesepowered/hack-worldsfair
+The demo video is live, recorded from the running system: Zcash and Tempo on their public testnets, Solana confidential transfers on a local validator with mainnet's program set. Our Zcash service already sends NU7 (v6) transactions on testnet; we ported it to librustzcash's NU7 pre-releases ourselves. The spend policy is enforced by the agent's SDK before signing; on-chain enforcement is next. Demo: youtube.com/watch?v=4qkV0ExM-Z8 · Code: github.com/chinesepowered/hack-worldsfair
 
 ### The other fields
 - **Chains:** select **Solana, Tempo and Zcash**. Zcash is not ticked yet.

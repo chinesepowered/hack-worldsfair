@@ -71,6 +71,8 @@ Settlement backends, each a first-class integration (these are the hackathon tra
 - Deck + dashboard identity: ledger paper / ink / carmine accent; Bricolage Grotesque + Source Serif 4 + IBM Plex Mono; the redaction-bar device. Keep new UI on those tokens (`slides.html`, `packages/demo/public/index.html`).
 - Zcash testnet: `zcash-devtool wallet -w <dir> init --name sotto -i <age-identity> -n test -s zecrocks`, then `sync`, `list-addresses`, `balance`, `send`. Faucets: fauzec.com API (`POST /api/v1/claim` with `{"address":…,"network":"testnet"}` — 1 TAZ, worked Oct 1), zcashfaucet.jinolabs.xyz (browser PoW, never paid out).
   Testnet funds land in the **Ironwood** pool (pool code 4). Payer settler: the funded wallet on `:8777` with `-i <identity>`; payee: the viewing-key wallet on `:8778`.
+  Since Oct 4 the settler is built on librustzcash's **NU7 pre-releases** (testnet NU7 at 4,465,026, v6 txs); run `wallet upgrade` on wallets made by older builds.
+  Start settlers with `setsid -f <bin> … serve …` and write pidfiles with an anchored `pgrep -f "^<bin path> wallet -w <dir> serve"` (an unanchored pattern also matches the calling shell).
 - Demo video: `packages/demo/video/make-video.sh` (narration → reset → record → assemble; see its README). Output committed at `docs/video/`.
   Needs `ELEVENLABS_API_KEY` (from the human, never stored in the repo), `TEMPO_PK`, both settlers, ffmpeg (`pip install imageio-ffmpeg`).
 

@@ -61,7 +61,7 @@ amounts, the owner sees every receipt, the auditor decrypts from the chain, and 
 | Sponsor | What sotto builds on | How agents pay | Verified on |
 |---|---|---|---|
 | **Solana** | Token-2022 confidential transfers with an auditor key, ZK ElGamal proofs | x402 `confidential` · MPP `solana-confidential` | Local validator with mainnet's program set |
-| **Zcash** | Shielded payments, payment ID in the encrypted memo, viewing-key verification | x402 `shielded` · MPP `zcash-shielded` | Zcash testnet |
+| **Zcash** | Shielded payments, payment ID in the encrypted memo, viewing-key verification | x402 `shielded` · MPP `zcash-shielded` | Zcash testnet, after the NU7 upgrade |
 | **Tempo** | TIP-20 stablecoin payments over Tempo's Machine Payments Protocol | MPP `tempo` | Moderato testnet |
 
 ## Sponsor details
@@ -88,10 +88,13 @@ amounts, the owner sees every receipt, the auditor decrypts from the chain, and 
   and cannot spend. It accepts the note whose memo matches the payment ID and whose value covers the price.
 - **The settler.** Rust, a fork of zcash-devtool on the librustzcash light-client crates, syncing through lightwalletd.
   sotto adds a `serve` HTTP API (`/address`, `/sync`, `/balance`, `/send`, `/received`); the payer runs one with a
-  spending key.
-- **Verified on testnet.** For example, shielded payment
-  `99e91cbac3f5e9e8b0e5ec10bbdf0ad12673d65a8becf709cdf66ffbd4f8cb1c` (October 1, 2026). The API accepts a payment once it is mined, one
-  block, about 75 seconds on average.
+  spending key. It runs on librustzcash's NU7 pre-releases, so it sends the new v6 transactions.
+- **Already on NU7.** NU7 activated on Zcash testnet at block 4,465,026. Upstream zcash-devtool hadn't moved yet, so
+  we ported the settler ourselves; sotto's first shielded payment after the upgrade,
+  `e4485faaf569444cdb4274ae07d0eac5a2fc4cb1165301336bd78ac1fa9fad94`, is a v6 transaction (consensus branch
+  `0x77190AD9`) mined at block 4,465,375.
+- **Settlement.** The API accepts a payment once it is mined, one block, about a minute in our runs. The demo video
+  shows an earlier payment from before NU7, `99e91cbac3f5e9e8b0e5ec10bbdf0ad12673d65a8becf709cdf66ffbd4f8cb1c`.
 - **Where.** `services/zcash-settler`, `packages/sdk/src/rails/zcash-shielded`, `packages/sdk/src/x402/zcash-shielded.ts`
   and `packages/sdk/src/mpp/zcash-shielded.ts`.
 

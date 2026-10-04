@@ -45,6 +45,7 @@ Deadline: **Oct 12, 2026, 11:59pm PT**. Last five days are reserved for videos +
 Burner wallets · Agent Miles · UI polish beyond the demo path · any fourth chain before three work.
 
 ## Decisions log
+- 2026-10-04 — NU7 activated on Zcash testnet (block 4,465,026, branch `0x77190AD9`, v6 transactions) and our old settler's sends were rejected. Ported `services/zcash-settler` to librustzcash's NU7 pre-releases (Sept 30) ourselves — upstream zcash-devtool hadn't moved — and dropped the `inspect`/`pczt`/`migration`/`keystone` commands instead of porting them. First sotto payment on NU7: `e4485faa…` (v6), block 4,465,375. See `services/zcash-settler/VENDORED.md`.
 - 2026-10-01 — The demo video is **scripted against the live system**, not screen-captured by hand: Playwright drives a stage page (dashboard, a terminal that really runs the commands, Tempo's explorer), CDP screencast captures frames, narration clips (ElevenLabs, voice Sapphire) start when the event they describe happens. Re-recordable in one command. Only time compression: the Zcash block wait, labelled fast-forward on screen.
 - 2026-10-01 — Zcash settler bug: compact blocks carry no memos, and `serve` never ran upstream's enhancement step, so `/received?memo=` never matched a real payment. `serve` now enhances after every sync. Mempool acceptance is still not wired (payee waits one block).
 - 2026-10-01 — Solana Explorer sits behind a Vercel bot checkpoint for headless browsers; we don't try to get past it. The dashboard's public pane reads the chain directly; Tempo's explorer renders fine.
