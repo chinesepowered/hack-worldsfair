@@ -71,3 +71,57 @@ agent payments as a stated target.
 ## Weekly updates (optional, recommended)
 1-minute videos: what shipped, what's next. Week 1: rails proven. Week 2: devnet deployments + polish.
 Week 3: on-chain policy contract / pilots. Week 4: videos, submission.
+
+## Portal form answers (October 4 version of the form)
+
+Pasted into the Colosseum form; each fits its character limit.
+
+### What are you building, and who is it for?
+*966/1000 characters*
+
+sotto is a payment rail for AI agents that keeps their purchases private while keeping their spending bounded and provable. Today an agent that pays with x402 leaves a public record of every purchase: what it bought, from whom, how often and for how much. Anyone can read a trading agent's strategy off the chain, and nothing stops one bad prompt from draining its wallet.
+
+With sotto, payments are confidential by default: amounts are encrypted on Solana and fully shielded on Zcash. Before anything is signed, an owner-set policy decides: per-payment cap, budgets, allowed hosts, expiry, kill switch. The owner gets a signed receipt for every payment, and an auditor with a viewing key can verify exact amounts from the chain alone. Confidential, not anonymous.
+
+It's for teams whose agents buy data, APIs and tools on their own, such as trading, research and procurement agents, and for API sellers who want to get paid by agents without exposing their customers.
+
+### Why did you decide to build this, and why build it now?
+*894/1000 characters*
+
+Agents are starting to pay for their own data, APIs and tools, and the standards they use, x402 and Tempo's Machine Payments Protocol, settle on public ledgers. That's fine for a demo but not for a business. No company wants competitors reading its agents' purchases, and no owner wants an agent with an unbounded wallet. Privacy and spending limits are what turn agent payments from a novelty into something a finance team will approve.
+
+Why now: the pieces finally exist. Solana's ZK ElGamal proof program, which powers confidential transfers, came back on mainnet in June 2026, and almost nobody uses it yet. Zcash's shielded payments and viewing keys are mature. x402 and MPP are becoming how agents pay, and MCP servers and Agent Skills let any agent adopt a new payment method with one line of config. sotto plugs into those standards instead of inventing new ones, so it grows with them.
+
+### What technologies are you using or integrating with?
+*770/1000 characters*
+
+Solana: Token-2022 confidential transfers with an auditor key, the ZK ElGamal proof program, SPL Record, Memo; @solana/kit, @solana-program/token-2022, @solana/zk-sdk.
+Zcash: shielded payments with the payment ID in the encrypted memo; a Rust settler on librustzcash (fork of zcash-devtool), lightwalletd.
+Tempo: TIP-20 stablecoin payments over the Machine Payments Protocol (mppx), Moderato testnet.
+Protocols: x402 v2 (@x402/core, payment-identifier extension), MPP, Model Context Protocol (@modelcontextprotocol/sdk), Agent Skills.
+Stack: TypeScript, Node 22, Express, Rust (tokio, axum), pnpm, Vitest.
+Developer tools: solana-test-validator, Playwright (scripted demo recording), ffmpeg, GitHub.
+AI tools: Claude Code (main coding tool), ElevenLabs (demo narration).
+
+### How does your product use these chains?
+*417/500 characters*
+
+Solana: agents pay with Token-2022 confidential transfers. Amounts are encrypted; the API and an auditor decrypt them from the chain with their own keys. Zcash: fully shielded payments; the payment ID rides in the encrypted memo and the API verifies with a viewing key. Tempo: stablecoin payments over Tempo's Machine Payments Protocol, gated by the same spend policy and receipted. One 402 response offers all three.
+
+### Did anyone not listed on the team do meaningful work?
+*394/600 characters*
+
+No other people worked on it; I'm a solo founder. I built it with Claude Code as my AI coding tool (listed under technologies). Third-party code is used as unmodified open-source dependencies, except the Zcash settler, a fork of zcash-devtool (MIT/Apache-2.0) with a new HTTP serve command, credited in services/zcash-settler/VENDORED.md. All project code was written during the contest window.
+
+### Anything else judges should know?
+*429/500 characters*
+
+Everything in the demo video is live, recorded from the running system: Zcash and Tempo payments on their testnets, and Solana confidential transfers on a local validator running mainnet's program set (devnet faucets were rate-limited). The spend policy is enforced by the agent's SDK before anything is signed; on-chain enforcement is next. Demo: youtube.com/watch?v=4qkV0ExM-Z8 · Code: github.com/chinesepowered/hack-worldsfair
+
+### The other fields
+- **Chains:** select **Solana, Tempo and Zcash**. Zcash is not ticked yet.
+- **Category:** FinTech fits. If there is a Payments or Infrastructure option, either is a closer match.
+- **Mobile-focused dApp:** No.
+- **Based in:** United States.
+- **Telegram:** your own handle.
+- **Before submitting:** make the GitHub repo public. Both the README and the demo point to it.

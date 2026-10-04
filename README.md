@@ -28,6 +28,8 @@ nothing bounds what an agent spends, so one bug or one bad prompt can drain the 
 Before anything is signed, the owner's policy decides: a per-payment cap, hourly, daily and monthly budgets, allowed
 and blocked hosts, an expiry date, and a kill switch. Confidential, not anonymous.
 
+<p align="center"><img src="docs/img/slide-2.png" width="880" alt="Slide 2: sotto, paid quietly, proven loudly: the public, the owner and an auditor see the same payment differently"></p>
+
 ## How it works
 
 1. **Ask.** An agent requests a paid resource through the SDK, the MCP server, or the `sotto` CLI.
@@ -50,9 +52,13 @@ The pieces: `packages/sdk` holds the policy engine, receipts, rails, x402 scheme
 that teaches an agent to use it. `services/zcash-settler` is a Rust service that holds the Zcash wallet. `packages/demo`
 is a paid API, the owner and auditor dashboard, and Capy, the demo agent; `demo.sh` starts all of it.
 
+<p align="center"><img src="docs/img/dashboard.png" width="920" alt="The demo dashboard: Capy, Claude Code and a Tempo agent paying one API, as the public, the owner and an auditor see it"></p>
+<p align="center"><em>The demo dashboard, live: Capy, Claude Code and a Tempo agent paying one API. The public sees redacted
+amounts, the owner sees every receipt, the auditor decrypts from the chain, and the policy refuses Capy once its budget is spent.</em></p>
+
 ## Sponsors at a glance
 
-| Sponsor | What sotto builds on | How agents pay | Live on |
+| Sponsor | What sotto builds on | How agents pay | Verified on |
 |---|---|---|---|
 | **Solana** | Token-2022 confidential transfers with an auditor key, ZK ElGamal proofs | x402 `confidential` · MPP `solana-confidential` | Local validator with mainnet's program set |
 | **Zcash** | Shielded payments, payment ID in the encrypted memo, viewing-key verification | x402 `shielded` · MPP `zcash-shielded` | Zcash testnet |
@@ -83,8 +89,8 @@ is a paid API, the owner and auditor dashboard, and Capy, the demo agent; `demo.
 - **The settler.** Rust, a fork of zcash-devtool on the librustzcash light-client crates, syncing through lightwalletd.
   sotto adds a `serve` HTTP API (`/address`, `/sync`, `/balance`, `/send`, `/received`); the payer runs one with a
   spending key.
-- **Live on testnet.** For example, shielded payment
-  `99e91cbac3f5e9e8b0e5ec10bbdf0ad12673d65a8becf709cdf66ffbd4f8cb1c`. The API accepts a payment once it is mined, one
+- **Verified on testnet.** For example, shielded payment
+  `99e91cbac3f5e9e8b0e5ec10bbdf0ad12673d65a8becf709cdf66ffbd4f8cb1c` (October 1, 2026). The API accepts a payment once it is mined, one
   block, about 75 seconds on average.
 - **Where.** `services/zcash-settler`, `packages/sdk/src/rails/zcash-shielded`, `packages/sdk/src/x402/zcash-shielded.ts`
   and `packages/sdk/src/mpp/zcash-shielded.ts`.
@@ -100,3 +106,95 @@ is a paid API, the owner and auditor dashboard, and Capy, the demo agent; `demo.
   [this $0.25 payment on Tempo's explorer](https://explore.testnet.tempo.xyz/tx/0x9f09061288efdc98126a299b71cc957f8cb709992756e10ba4f8d864eb4e63b9).
 - **Where.** The `tempo` rail in `packages/sdk/src/client.ts` and `packages/sdk/src/server.ts`; the demo turns it on
   with `TEMPO_RECIPIENT`.
+
+## Repository map
+
+```
+packages/sdk            @sotto/sdk: policy engine, signed receipts, rails, x402 schemes, MPP methods,
+                        SottoServer (payee) and SottoClient (agent)
+packages/mcp-server     sotto-mcp-server and the `sotto` CLI: fetch, budget, receipts, decisions, pause,
+                        as MCP tools and as shell commands
+skills/sotto            the Agent Skill (SKILL.md) that teaches an agent with a shell to pay through the CLI
+packages/demo           the paid API, Capy the demo agent, the three-viewpoint dashboard, demo.sh
+packages/demo/video     the script that records the demo video from the live system
+services/zcash-settler  Rust service (fork of zcash-devtool) holding the Zcash wallet behind an HTTP API
+docs/                   architecture, plan and decisions log, pitch, demo script, the demo video source
+slides.html             the 4-slide pitch (← → keys)
+```
+
+## Run it
+
+### The demo
+
+```bash
+pnpm install && pnpm -r build
+packages/demo/demo.sh          # local Solana (ZK ElGamal + Token-2022 + SPL Record), keys, confidential mint, API + dashboard, Capy
+```
+
+Open http://127.0.0.1:4020: watch the public column stay redacted while the owner column fills, click **decrypt**
+in the auditor column, then hit **Pause spending** and watch the next purchase get refused before it is signed.
+To accept Tempo too, set `TEMPO_RECIPIENT=0x…`; for Zcash, set `ZCASH_SETTLER_URL` and `ZCASH_ADDRESS` with a payee
+settler running (see `packages/demo/demo.sh`).
+
+Then let your own agent in, on the same chain and mint:
+
+```bash
+packages/demo/demo.sh mcp                                   # Claude Code / any MCP client: the config to paste
+eval "$(packages/demo/demo.sh env)" && sotto fetch http://127.0.0.1:4020/premium/quote    # the CLI + Agent Skill door
+```
+
+`demo.sh stop` stops everything; `demo.sh reset` wipes the chain and starts fresh. Needs Node 22, pnpm and the Solana CLI
+(`sh -c "$(curl -sSfL https://release.anza.xyz/stable/install)"`). The manual, step-by-step path is in
+[`packages/demo/README.md`](packages/demo/README.md).
+
+### In your own code
+
+**Payee: protect a route for both protocols**
+
+```ts
+import express from "express";
+import { SottoServer, ZcashSettlerClient } from "@sotto/sdk";
+
+const server = SottoServer.create({
+  secretKey: process.env.MPP_SECRET_KEY!,                       // ≥ 32 bytes
+  solana: { rpcUrl, payee: apiSigner, usdMint: { mint, decimals: 6 }, network: "solana:devnet" },
+  zcash:  { settler: new ZcashSettlerClient("http://127.0.0.1:8778"), address: "utest1…", network: "zcash:testnet", zecPriceUsd: 40 },
+  tempo:  { recipient: "0x…", testnet: true },
+});
+const app = express();
+app.use(server.protect({ "GET /premium": { price: "$0.25" } }));
+app.get("/premium", (_req, res) => res.json({ data: "…" }));
+```
+
+**Agent: a fetch that pays within policy and keeps receipts**
+
+```ts
+import { SottoClient } from "@sotto/sdk";
+
+const agent = await SottoClient.create({
+  agentId: "quote-bot",
+  policy: { agentId: "quote-bot", maxPerPayment: 500_000n /* $0.50 */, perDay: 10_000_000n /* $10 */, allowHosts: ["*.example.com"] },
+  solana: { client, signer, network: "solana:devnet", mints: [{ mint, decimals: 6 }] },
+});
+const res = await agent.fetch("https://api.example.com/premium");   // pays confidentially if asked; throws PolicyViolation if the policy says no
+```
+
+**Any MCP client**
+
+```json
+{ "mcpServers": { "sotto": { "command": "node", "args": ["packages/mcp-server/dist/index.js"],
+  "env": { "SOTTO_AGENT_ID": "claude", "SOTTO_POLICY": "{\"maxPerPaymentUsd\":0.5,\"perDayUsd\":10}",
+           "SOTTO_SOLANA_KEYFILE": "~/.config/solana/id.json", "SOTTO_SOLANA_MINTS": "[{\"mint\":\"…\",\"decimals\":6}]" } } } }
+```
+
+**Any agent with a shell: the Agent Skill**
+
+```bash
+cp -r skills/sotto ~/.claude/skills/            # or any Agent Skills-compatible runtime
+export PATH="$PWD/packages/mcp-server/bin:$PATH" SOTTO_AGENT_ID=claude SOTTO_POLICY='{"maxPerPaymentUsd":0.5,"perDayUsd":10}' \
+       SOTTO_SOLANA_KEYFILE=~/.config/solana/id.json SOTTO_SOLANA_MINTS='[{"mint":"…","decimals":6}]'
+sotto fetch https://api.example.com/premium     # pays if asked and allowed; exit code 3 means the policy said no
+```
+
+The MCP server and the CLI read the same `SOTTO_*` variables and share one state directory (`~/.sotto`), so budgets,
+receipts and the kill switch are the same whichever door the agent came through.
